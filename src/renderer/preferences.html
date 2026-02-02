@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>GitLabBar - Preferences</title>
+  <style>
+    :root {
+      /* Dark theme - Premium palette */
+      --bg-base: #0a0a0b;
+      --bg-elevated: rgba(18, 18, 20, 0.95);
+      --bg-card: rgba(28, 28, 32, 0.6);
+      --bg-card-hover: rgba(38, 38, 45, 0.7);
+      --bg-input: rgba(20, 20, 24, 0.8);
+
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --glass-highlight: rgba(255, 255, 255, 0.04);
+
+      --text-primary: rgba(255, 255, 255, 0.95);
+      --text-secondary: rgba(255, 255, 255, 0.55);
+      --text-tertiary: rgba(255, 255, 255, 0.35);
+
+      --accent-purple: #8B5CF6;
+      --accent-purple-glow: rgba(139, 92, 246, 0.4);
+      --accent-blue: #3B82F6;
+      --accent-green: #10B981;
+      --accent-green-glow: rgba(16, 185, 129, 0.3);
+      --accent-red: #EF4444;
+      --accent-red-glow: rgba(239, 68, 68, 0.3);
+
+      --gradient-purple: linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%);
+      --gradient-mesh: radial-gradient(at 0% 0%, rgba(139, 92, 246, 0.15) 0px, transparent 50%),
+                       radial-gradient(at 100% 100%, rgba(59, 130, 246, 0.1) 0px, transparent 50%);
+
+      --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+    }
+
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg-base: #f5f5f7;
+        --bg-elevated: rgba(255, 255, 255, 0.95);
+        --bg-card: rgba(255, 255, 255, 0.8);
+        --bg-card-hover: rgba(250, 250, 255, 0.9);
+        --bg-input: rgba(245, 245, 250, 0.9);
+
+        --glass-border: rgba(0, 0, 0, 0.08);
+        --glass-highlight: rgba(255, 255, 255, 0.5);
+
+        --text-primary: rgba(0, 0, 0, 0.9);
+        --text-secondary: rgba(0, 0, 0, 0.55);
+        --text-tertiary: rgba(0, 0, 0, 0.35);
+
+        --gradient-mesh: radial-gradient(at 0% 0%, rgba(139, 92, 246, 0.08) 0px, transparent 50%),
+                         radial-gradient(at 100% 100%, rgba(59, 130, 246, 0.05) 0px, transparent 50%);
+
+        --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.1);
+      }
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', system-ui, sans-serif;
+      font-size: 13px;
+      background: var(--bg-base);
+      background-image: var(--gradient-mesh);
+      color: var(--text-primary);
+      -webkit-font-smoothing: antialiased;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ═══════════════════════════════════════════
+       SIDEBAR
+    ═══════════════════════════════════════════ */
+    .sidebar {
+      width: 220px;
+      background: var(--bg-elevated);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-right: 1px solid var(--glass-border);
+      padding: 70px 16px 20px;
+      -webkit-app-region: drag;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar-header {
+      margin-bottom: 24px;
+      padding: 0 8px;
+      -webkit-app-region: no-drag;
+    }
+
+    .sidebar-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 4px;
+    }
+
+    .sidebar-logo-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-sm);
+      background: var(--gradient-purple);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px var(--accent-purple-glow);
+    }
+
+    .sidebar-logo-icon svg {
+      width: 18px;
+      height: 18px;
+      fill: white;
+    }
+
+    .sidebar-title {
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+    }
+
+    .sidebar-subtitle {
+      font-size: 11px;
+      color: var(--text-tertiary);
+      padding-left: 44px;
+      margin-top: -2px;
+    }
+
+    .sidebar-nav {
+      flex: 1;
+    }
+
+    .sidebar-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      -webkit-app-region: no-drag;
+      color: var(--text-secondary);
+      margin-bottom: 4px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .sidebar-item::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--gradient-purple);
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .sidebar-item:hover {
+      background: var(--bg-card-hover);
+      color: var(--text-primary);
+    }
+
+    .sidebar-item.active {
+      color: white;
+      box-shadow: var(--shadow-md), 0 0 20px var(--accent-purple-glow);
+    }
+
+    .sidebar-item.active::before {
+      opacity: 1;
+    }
+
+    .sidebar-item svg {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
+      position: relative;
+      z-index: 1;
+    }
+
+    .sidebar-item span {
+      font-weight: 500;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ═══════════════════════════════════════════
+       MAIN CONTENT
+    ═══════════════════════════════════════════ */
+    .main {
+      flex: 1;
+      padding: 70px 32px 32px;
+      overflow-y: auto;
+    }
+
+    .main::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .main::-webkit-scrollbar-thumb {
+      background: var(--glass-border);
+      border-radius: 3px;
+    }
+
+    .page {
+      display: none;
+      max-width: 480px;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .page-title {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .page-desc {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 32px;
+      line-height: 1.5;
+    }
+
+    /* ═══════════════════════════════════════════
+       FORM ELEMENTS
+    ═══════════════════════════════════════════ */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 12px 16px;
+      background: var(--bg-input);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      color: var(--text-primary);
+      font-size: 14px;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .form-input:focus {
+      border-color: var(--accent-purple);
+      box-shadow: 0 0 0 3px var(--accent-purple-glow);
+    }
+
+    .form-input::placeholder {
+      color: var(--text-tertiary);
+    }
+
+    .form-hint {
+      font-size: 11px;
+      color: var(--text-tertiary);
+      margin-top: 6px;
+      line-height: 1.4;
+    }
+
+    select.form-input {
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 36px;
+    }
+
+    /* ═══════════════════════════════════════════
+       BUTTONS
+    ═══════════════════════════════════════════ */
+    .btn {
+      padding: 12px 24px;
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      border: none;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary {
+      background: var(--gradient-purple);
+      color: white;
+      box-shadow: var(--shadow-md), 0 0 20px var(--accent-purple-glow);
+    }
+
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px var(--accent-purple-glow);
+    }
+
+    .btn-primary:hover::before {
+      left: 100%;
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    /* ═══════════════════════════════════════════
+       ACCOUNT LIST
+    ═══════════════════════════════════════════ */
+    .account-list {
+      margin-bottom: 32px;
+    }
+
+    .account-item {
+      display: flex;
+      align-items: center;
+      padding: 16px;
+      background: var(--bg-card);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      margin-bottom: 12px;
+      gap: 16px;
+      transition: all 0.2s ease;
+    }
+
+    .account-item:hover {
+      background: var(--bg-card-hover);
+      border-color: rgba(139, 92, 246, 0.2);
+      transform: translateX(4px);
+    }
+
+    .account-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-md);
+      background: var(--gradient-purple);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 18px;
+      box-shadow: 0 4px 12px var(--accent-purple-glow);
+    }
+
+    .account-info {
+      flex: 1;
+    }
+
+    .account-name {
+      font-weight: 600;
+      font-size: 15px;
+      margin-bottom: 4px;
+    }
+
+    .account-url {
+      font-size: 12px;
+      color: var(--text-secondary);
+      font-family: 'SF Mono', Monaco, monospace;
+    }
+
+    .account-delete {
+      padding: 10px;
+      background: var(--bg-input);
+      border: 1px solid var(--glass-border);
+      color: var(--text-tertiary);
+      cursor: pointer;
+      border-radius: var(--radius-sm);
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .account-delete:hover {
+      background: var(--accent-red);
+      border-color: var(--accent-red);
+      color: white;
+      box-shadow: 0 4px 12px var(--accent-red-glow);
+    }
+
+    .account-delete svg {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
+    }
+
+    /* ═══════════════════════════════════════════
+       EMPTY STATE
+    ═══════════════════════════════════════════ */
+    .empty-accounts {
+      text-align: center;
+      padding: 40px 24px;
+      background: var(--bg-card);
+      border: 1px dashed var(--glass-border);
+      border-radius: var(--radius-lg);
+      color: var(--text-secondary);
+    }
+
+    .empty-accounts-icon {
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 16px;
+      opacity: 0.5;
+    }
+
+    .empty-accounts-icon svg {
+      width: 100%;
+      height: 100%;
+      fill: var(--text-tertiary);
+    }
+
+    /* ═══════════════════════════════════════════
+       STATUS MESSAGE
+    ═══════════════════════════════════════════ */
+    .status-message {
+      padding: 14px 18px;
+      border-radius: var(--radius-md);
+      margin-bottom: 20px;
+      font-size: 13px;
+      font-weight: 500;
+      display: none;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .status-message.success {
+      display: flex;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: var(--accent-green);
+    }
+
+    .status-message.error {
+      display: flex;
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: var(--accent-red);
+    }
+
+    /* ═══════════════════════════════════════════
+       TOGGLE SWITCH
+    ═══════════════════════════════════════════ */
+    .settings-card {
+      background: var(--bg-card);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      padding: 8px;
+      margin-bottom: 24px;
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px;
+      border-radius: var(--radius-md);
+      transition: background 0.2s ease;
+    }
+
+    .toggle-row:hover {
+      background: var(--bg-card-hover);
+    }
+
+    .toggle-row + .toggle-row {
+      border-top: 1px solid var(--glass-border);
+    }
+
+    .toggle-info {
+      flex: 1;
+    }
+
+    .toggle-label {
+      font-weight: 500;
+      font-size: 14px;
+      margin-bottom: 2px;
+    }
+
+    .toggle-desc {
+      font-size: 12px;
+      color: var(--text-tertiary);
+    }
+
+    .toggle {
+      position: relative;
+      width: 48px;
+      height: 28px;
+      flex-shrink: 0;
+    }
+
+    .toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--bg-input);
+      border: 1px solid var(--glass-border);
+      border-radius: 28px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 22px;
+      width: 22px;
+      left: 2px;
+      bottom: 2px;
+      background: white;
+      border-radius: 50%;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .toggle input:checked + .toggle-slider {
+      background: var(--gradient-purple);
+      border-color: transparent;
+      box-shadow: 0 0 16px var(--accent-purple-glow);
+    }
+
+    .toggle input:checked + .toggle-slider:before {
+      transform: translateX(20px);
+    }
+
+    /* ═══════════════════════════════════════════
+       SECTION DIVIDER
+    ═══════════════════════════════════════════ */
+    .section-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin: 32px 0 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--glass-border);
+    }
+
+    /* ═══════════════════════════════════════════
+       PROJECT LIST
+    ═══════════════════════════════════════════ */
+    .project-search {
+      position: relative;
+      margin-bottom: 16px;
+    }
+
+    .project-search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 16px;
+      height: 16px;
+      fill: var(--text-tertiary);
+    }
+
+    .project-search input {
+      width: 100%;
+      padding: 12px 16px 12px 42px;
+      background: var(--bg-input);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      color: var(--text-primary);
+      font-size: 14px;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .project-search input:focus {
+      border-color: var(--accent-purple);
+      box-shadow: 0 0 0 3px var(--accent-purple-glow);
+    }
+
+    .project-list-container {
+      background: var(--bg-card);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      max-height: 320px;
+      overflow-y: auto;
+    }
+
+    .project-list-container::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .project-list-container::-webkit-scrollbar-thumb {
+      background: var(--glass-border);
+      border-radius: 3px;
+    }
+
+    .project-item {
+      display: flex;
+      align-items: center;
+      padding: 14px 16px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      gap: 14px;
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    .project-item:last-child {
+      border-bottom: none;
+    }
+
+    .project-item:hover {
+      background: var(--bg-card-hover);
+    }
+
+    .project-checkbox {
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--glass-border);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .project-item.selected .project-checkbox {
+      background: var(--gradient-purple);
+      border-color: transparent;
+      box-shadow: 0 2px 8px var(--accent-purple-glow);
+    }
+
+    .project-checkbox svg {
+      width: 12px;
+      height: 12px;
+      fill: white;
+      opacity: 0;
+      transform: scale(0.5);
+      transition: all 0.2s ease;
+    }
+
+    .project-item.selected .project-checkbox svg {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .project-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .project-name {
+      font-weight: 500;
+      font-size: 14px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .project-path {
+      font-size: 11px;
+      color: var(--text-tertiary);
+      font-family: 'SF Mono', Monaco, monospace;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .project-loading {
+      text-align: center;
+      padding: 40px;
+      color: var(--text-tertiary);
+    }
+
+    .project-empty {
+      text-align: center;
+      padding: 40px;
+      color: var(--text-tertiary);
+    }
+
+    .watched-projects {
+      margin-bottom: 24px;
+    }
+
+    .watched-projects-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .watched-projects-count {
+      background: var(--gradient-purple);
+      color: white;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 10px;
+    }
+
+    .watched-project-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: var(--bg-card);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      font-size: 12px;
+      margin: 0 6px 6px 0;
+    }
+
+    .watched-project-remove {
+      width: 14px;
+      height: 14px;
+      cursor: pointer;
+      opacity: 0.5;
+      transition: opacity 0.2s;
+    }
+
+    .watched-project-remove:hover {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-icon">
+          <svg viewBox="0 0 24 24"><path d="M22.65 14.39L12 22.13 1.35 14.39a.84.84 0 0 1-.3-.94l1.22-3.78 2.44-7.51A.42.42 0 0 1 4.82 2a.43.43 0 0 1 .58 0 .42.42 0 0 1 .11.18l2.44 7.49h8.1l2.44-7.51A.42.42 0 0 1 18.6 2a.43.43 0 0 1 .58 0 .42.42 0 0 1 .11.18l2.44 7.51L23 13.45a.84.84 0 0 1-.35.94z"/></svg>
+        </div>
+        <span class="sidebar-title">GitLabBar</span>
+      </div>
+      <div class="sidebar-subtitle">Preferences</div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="sidebar-item active" data-page="accounts">
+        <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+        <span>Accounts</span>
+      </div>
+      <div class="sidebar-item" data-page="projects">
+        <svg viewBox="0 0 24 24"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z"/></svg>
+        <span>Projects</span>
+      </div>
+      <div class="sidebar-item" data-page="general">
+        <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.31.06-.63.06-.94 0-.31-.02-.63-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+        <span>General</span>
+      </div>
+    </nav>
+  </div>
+
+  <div class="main">
+    <!-- Accounts page -->
+    <div class="page active" id="page-accounts">
+      <h1 class="page-title">GitLab Accounts</h1>
+      <p class="page-desc">Manage your GitLab connections to track your merge requests and pipelines.</p>
+
+      <div id="statusMessage" class="status-message"></div>
+
+      <div id="accountList" class="account-list">
+        <div class="empty-accounts">
+          <div class="empty-accounts-icon">
+            <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+          </div>
+          No accounts configured
+        </div>
+      </div>
+
+      <div class="section-title">New account</div>
+
+      <div class="form-group">
+        <label class="form-label">Account name</label>
+        <input type="text" class="form-input" id="accountName" placeholder="E.g.: Personal GitLab">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Instance URL</label>
+        <input type="text" class="form-input" id="instanceUrl" placeholder="https://gitlab.com" value="https://gitlab.com">
+        <div class="form-hint">URL of your GitLab instance (gitlab.com or self-hosted)</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Personal access token</label>
+        <input type="password" class="form-input" id="accessToken" placeholder="glpat-xxxxxxxxxxxx">
+        <div class="form-hint">Create a token with scopes: read_api, read_user</div>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-primary" id="addAccountBtn">Add account</button>
+      </div>
+    </div>
+
+    <!-- Projects page -->
+    <div class="page" id="page-projects">
+      <h1 class="page-title">Watched projects</h1>
+      <p class="page-desc">Select projects whose pipelines you want to follow.</p>
+
+      <div id="watchedProjectsList" class="watched-projects"></div>
+
+      <div class="section-title">Search for a project</div>
+
+      <div class="project-search">
+        <svg class="project-search-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+        <input type="text" id="projectSearch" placeholder="Search for a project...">
+      </div>
+
+      <div id="projectListContainer" class="project-list-container">
+        <div class="project-loading">Load your projects by typing in the search...</div>
+      </div>
+    </div>
+
+    <!-- General page -->
+    <div class="page" id="page-general">
+      <h1 class="page-title">Settings</h1>
+      <p class="page-desc">Customize GitLabBar's behavior according to your preferences.</p>
+
+      <div class="section-title">Application</div>
+
+      <div class="settings-card">
+        <div class="toggle-row">
+          <div class="toggle-info">
+            <div class="toggle-label">Launch at startup</div>
+            <div class="toggle-desc">Open GitLabBar automatically when macOS starts</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="launchAtStartup">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="section-title">Refresh</div>
+
+      <div class="form-group">
+        <label class="form-label">Update interval</label>
+        <select class="form-input" id="refreshInterval">
+          <option value="30000">30 seconds</option>
+          <option value="60000" selected>1 minute</option>
+          <option value="120000">2 minutes</option>
+          <option value="300000">5 minutes</option>
+        </select>
+      </div>
+
+      <div class="section-title">Pipelines</div>
+
+      <div class="form-group">
+        <label class="form-label">Hide failed pipelines after</label>
+        <select class="form-input" id="failedPipelineMaxAge">
+          <option value="1">1 hour</option>
+          <option value="2">2 hours</option>
+          <option value="6">6 hours</option>
+          <option value="12">12 hours</option>
+          <option value="24" selected>24 hours</option>
+          <option value="48">48 hours</option>
+          <option value="72">72 hours (3 days)</option>
+          <option value="168">168 hours (1 week)</option>
+          <option value="0">Never hide</option>
+        </select>
+        <div class="form-hint">Older failed pipelines will not be displayed</div>
+      </div>
+
+      <div class="section-title">Merge Requests</div>
+
+      <div class="settings-card">
+        <div class="toggle-row">
+          <div class="toggle-info">
+            <div class="toggle-label">MRs without reviewer</div>
+            <div class="toggle-desc">Show MRs awaiting review without an assigned reviewer</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="showUnassignedMRs">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="section-title">Notifications</div>
+
+      <div class="settings-card">
+        <div class="toggle-row">
+          <div class="toggle-info">
+            <div class="toggle-label">New assigned MRs</div>
+            <div class="toggle-desc">Receive a notification when an MR is assigned to you</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="notifyNewMR" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <div class="toggle-row">
+          <div class="toggle-info">
+            <div class="toggle-label">Failed pipelines</div>
+            <div class="toggle-desc">Receive a notification when a pipeline fails</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="notifyFailedPipeline" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Navigation
+    const sidebarItems = document.querySelectorAll('.sidebar-item');
+    const pages = document.querySelectorAll('.page');
+
+    sidebarItems.forEach(item => {
+      item.addEventListener('click', () => {
+        const pageName = item.dataset.page;
+        sidebarItems.forEach(i => i.classList.remove('active'));
+        item.classList.add('active');
+        pages.forEach(p => p.classList.remove('active'));
+        document.getElementById(`page-${pageName}`).classList.add('active');
+      });
+    });
+
+    // Elements
+    const accountList = document.getElementById('accountList');
+    const statusMessage = document.getElementById('statusMessage');
+    const accountName = document.getElementById('accountName');
+    const instanceUrl = document.getElementById('instanceUrl');
+    const accessToken = document.getElementById('accessToken');
+    const addAccountBtn = document.getElementById('addAccountBtn');
+    const launchAtStartup = document.getElementById('launchAtStartup');
+    const refreshInterval = document.getElementById('refreshInterval');
+    const failedPipelineMaxAge = document.getElementById('failedPipelineMaxAge');
+    const showUnassignedMRs = document.getElementById('showUnassignedMRs');
+    const projectSearch = document.getElementById('projectSearch');
+    const projectListContainer = document.getElementById('projectListContainer');
+    const watchedProjectsList = document.getElementById('watchedProjectsList');
+
+    let watchedProjects = [];
+    let searchTimeout = null;
+
+    // Show status
+    function showStatus(message, type) {
+      statusMessage.textContent = message;
+      statusMessage.className = 'status-message ' + type;
+      setTimeout(() => {
+        statusMessage.className = 'status-message';
+      }, 5000);
+    }
+
+    // Render accounts
+    async function renderAccounts() {
+      try {
+        if (window.gitlabbar && window.gitlabbar.accounts) {
+          const accounts = await window.gitlabbar.accounts.getAll();
+          if (accounts && accounts.length > 0) {
+            accountList.innerHTML = accounts.map(account => `
+              <div class="account-item" data-id="${account.id}">
+                <div class="account-avatar">${(account.name || 'G')[0].toUpperCase()}</div>
+                <div class="account-info">
+                  <div class="account-name">${escapeHtml(account.name)}</div>
+                  <div class="account-url">${escapeHtml(account.instanceUrl)}</div>
+                </div>
+                <button class="account-delete" data-id="${account.id}" title="Delete">
+                  <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                </button>
+              </div>
+            `).join('');
+
+            accountList.querySelectorAll('.account-delete').forEach(btn => {
+              btn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                const id = btn.dataset.id;
+                if (confirm('Delete this account?')) {
+                  await window.gitlabbar.accounts.remove(id);
+                  renderAccounts();
+                  showStatus('Account deleted', 'success');
+                }
+              });
+            });
+          } else {
+            accountList.innerHTML = `
+              <div class="empty-accounts">
+                <div class="empty-accounts-icon">
+                  <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                </div>
+                No accounts configured
+              </div>
+            `;
+          }
+        }
+      } catch (err) {
+        console.error('Error loading accounts:', err);
+      }
+    }
+
+    // Add account
+    addAccountBtn.addEventListener('click', async () => {
+      const name = accountName.value.trim();
+      const url = instanceUrl.value.trim();
+      const token = accessToken.value.trim();
+
+      if (!name || !url || !token) {
+        showStatus('Please fill in all fields', 'error');
+        return;
+      }
+
+      addAccountBtn.disabled = true;
+      addAccountBtn.textContent = 'Validating...';
+
+      try {
+        if (window.gitlabbar && window.gitlabbar.accounts) {
+          const isValid = await window.gitlabbar.accounts.validateToken(url, token);
+          if (!isValid) {
+            showStatus('Invalid token or incorrect URL', 'error');
+            return;
+          }
+
+          await window.gitlabbar.accounts.add({ name, instanceUrl: url, token });
+          showStatus('Account added successfully!', 'success');
+
+          accountName.value = '';
+          accessToken.value = '';
+
+          renderAccounts();
+        }
+      } catch (err) {
+        console.error('Error adding account:', err);
+        showStatus('Error: ' + (err.message || 'Unable to add account'), 'error');
+      } finally {
+        addAccountBtn.disabled = false;
+        addAccountBtn.textContent = 'Add account';
+      }
+    });
+
+    // Load settings
+    async function loadSettings() {
+      try {
+        if (window.gitlabbar && window.gitlabbar.config) {
+          const config = await window.gitlabbar.config.getAll();
+          if (config) {
+            launchAtStartup.checked = config.launchAtStartup || false;
+            refreshInterval.value = config.refreshInterval || 60000;
+            failedPipelineMaxAge.value = config.failedPipelineMaxAge || 24;
+            showUnassignedMRs.checked = config.showUnassignedMRs || false;
+          }
+        }
+      } catch (err) {
+        console.error('Error loading settings:', err);
+      }
+    }
+
+    // Save settings
+    launchAtStartup.addEventListener('change', async () => {
+      if (window.gitlabbar && window.gitlabbar.config) {
+        await window.gitlabbar.config.set('launchAtStartup', launchAtStartup.checked);
+      }
+    });
+
+    refreshInterval.addEventListener('change', async () => {
+      if (window.gitlabbar && window.gitlabbar.config) {
+        await window.gitlabbar.config.set('refreshInterval', parseInt(refreshInterval.value));
+      }
+    });
+
+    failedPipelineMaxAge.addEventListener('change', async () => {
+      if (window.gitlabbar && window.gitlabbar.config) {
+        await window.gitlabbar.config.set('failedPipelineMaxAge', parseInt(failedPipelineMaxAge.value));
+      }
+    });
+
+    showUnassignedMRs.addEventListener('change', async () => {
+      if (window.gitlabbar && window.gitlabbar.config) {
+        await window.gitlabbar.config.set('showUnassignedMRs', showUnassignedMRs.checked);
+      }
+    });
+
+    // Projects search
+    projectSearch.addEventListener('input', () => {
+      clearTimeout(searchTimeout);
+      const query = projectSearch.value.trim();
+
+      if (query.length < 2) {
+        projectListContainer.innerHTML = '<div class="project-loading">Type at least 2 characters...</div>';
+        return;
+      }
+
+      projectListContainer.innerHTML = '<div class="project-loading">Searching...</div>';
+
+      searchTimeout = setTimeout(async () => {
+        await searchProjects(query);
+      }, 300);
+    });
+
+    async function searchProjects(query) {
+      try {
+        if (window.gitlabbar && window.gitlabbar.gitlab) {
+          const projects = await window.gitlabbar.gitlab.searchProjects(query);
+          renderProjectList(projects);
+        }
+      } catch (err) {
+        console.error('Error searching projects:', err);
+        projectListContainer.innerHTML = '<div class="project-empty">Error during search</div>';
+      }
+    }
+
+    function renderProjectList(projects) {
+      if (!projects || projects.length === 0) {
+        projectListContainer.innerHTML = '<div class="project-empty">No projects found</div>';
+        return;
+      }
+
+      const watchedIds = watchedProjects.map(p => p.id);
+
+      projectListContainer.innerHTML = projects.map(project => {
+        const isSelected = watchedIds.includes(project.id);
+        return `
+          <div class="project-item ${isSelected ? 'selected' : ''}" data-id="${project.id}" data-name="${escapeHtml(project.name)}" data-path="${escapeHtml(project.path_with_namespace)}">
+            <div class="project-checkbox">
+              <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+            </div>
+            <div class="project-info">
+              <div class="project-name">${escapeHtml(project.name)}</div>
+              <div class="project-path">${escapeHtml(project.path_with_namespace)}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      projectListContainer.querySelectorAll('.project-item').forEach(item => {
+        item.addEventListener('click', () => toggleProject(item));
+      });
+    }
+
+    async function toggleProject(item) {
+      const id = parseInt(item.dataset.id);
+      const name = item.dataset.name;
+      const path = item.dataset.path;
+      const isSelected = item.classList.contains('selected');
+
+      if (isSelected) {
+        watchedProjects = watchedProjects.filter(p => p.id !== id);
+        item.classList.remove('selected');
+      } else {
+        watchedProjects.push({ id, name, path });
+        item.classList.add('selected');
+      }
+
+      await saveWatchedProjects();
+      renderWatchedProjects();
+    }
+
+    async function saveWatchedProjects() {
+      if (window.gitlabbar && window.gitlabbar.config) {
+        await window.gitlabbar.config.set('watchedProjectIds', watchedProjects.map(p => p.id));
+        await window.gitlabbar.config.set('watchedProjectsData', watchedProjects);
+      }
+    }
+
+    function renderWatchedProjects() {
+      if (watchedProjects.length === 0) {
+        watchedProjectsList.innerHTML = '';
+        return;
+      }
+
+      watchedProjectsList.innerHTML = `
+        <div class="watched-projects-title">
+          Watched projects
+          <span class="watched-projects-count">${watchedProjects.length}</span>
+        </div>
+        <div>
+          ${watchedProjects.map(project => `
+            <span class="watched-project-chip">
+              ${escapeHtml(project.name)}
+              <svg class="watched-project-remove" data-id="${project.id}" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+              </svg>
+            </span>
+          `).join('')}
+        </div>
+      `;
+
+      watchedProjectsList.querySelectorAll('.watched-project-remove').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          const id = parseInt(btn.dataset.id);
+          watchedProjects = watchedProjects.filter(p => p.id !== id);
+          await saveWatchedProjects();
+          renderWatchedProjects();
+          // Update project list if visible
+          const item = projectListContainer.querySelector(`[data-id="${id}"]`);
+          if (item) item.classList.remove('selected');
+        });
+      });
+    }
+
+    async function loadWatchedProjects() {
+      try {
+        if (window.gitlabbar && window.gitlabbar.config) {
+          const config = await window.gitlabbar.config.getAll();
+          watchedProjects = config.watchedProjectsData || [];
+          renderWatchedProjects();
+        }
+      } catch (err) {
+        console.error('Error loading watched projects:', err);
+      }
+    }
+
+    // Utilities
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text || '';
+      return div.innerHTML;
+    }
+
+    // Initialize
+    renderAccounts();
+    loadSettings();
+    loadWatchedProjects();
+  </script>
+</body>
+</html>

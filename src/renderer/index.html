@@ -1,0 +1,2099 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>GitLabBar</title>
+  <style>
+    :root {
+      /* Dark theme - Premium palette */
+      --bg-base: #0a0a0b;
+      --bg-elevated: rgba(18, 18, 20, 0.85);
+      --bg-card: rgba(28, 28, 32, 0.6);
+      --bg-card-hover: rgba(38, 38, 45, 0.7);
+      --bg-card-active: rgba(48, 48, 58, 0.8);
+
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --glass-highlight: rgba(255, 255, 255, 0.04);
+
+      --text-primary: rgba(255, 255, 255, 0.95);
+      --text-secondary: rgba(255, 255, 255, 0.55);
+      --text-tertiary: rgba(255, 255, 255, 0.35);
+      --text-muted: rgba(255, 255, 255, 0.2);
+
+      /* Accent colors */
+      --accent-purple: #8B5CF6;
+      --accent-purple-glow: rgba(139, 92, 246, 0.4);
+      --accent-blue: #3B82F6;
+      --accent-blue-glow: rgba(59, 130, 246, 0.4);
+      --accent-cyan: #06B6D4;
+      --accent-green: #10B981;
+      --accent-green-glow: rgba(16, 185, 129, 0.4);
+      --accent-orange: #F59E0B;
+      --accent-orange-glow: rgba(245, 158, 11, 0.4);
+      --accent-red: #EF4444;
+      --accent-red-glow: rgba(239, 68, 68, 0.4);
+
+      /* Gradients */
+      --gradient-purple: linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%);
+      --gradient-blue: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
+      --gradient-green: linear-gradient(135deg, #10B981 0%, #059669 100%);
+      --gradient-orange: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+      --gradient-red: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+      --gradient-mesh: radial-gradient(at 40% 20%, rgba(139, 92, 246, 0.15) 0px, transparent 50%),
+                       radial-gradient(at 80% 0%, rgba(59, 130, 246, 0.1) 0px, transparent 50%),
+                       radial-gradient(at 0% 50%, rgba(16, 185, 129, 0.08) 0px, transparent 50%);
+
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+      --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+      --shadow-glow: 0 0 40px rgba(139, 92, 246, 0.15);
+
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 20px;
+    }
+
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg-base: #f8f9fa;
+        --bg-elevated: rgba(255, 255, 255, 0.9);
+        --bg-card: rgba(255, 255, 255, 0.7);
+        --bg-card-hover: rgba(245, 245, 250, 0.9);
+        --bg-card-active: rgba(235, 235, 245, 1);
+
+        --glass-border: rgba(0, 0, 0, 0.08);
+        --glass-highlight: rgba(255, 255, 255, 0.5);
+
+        --text-primary: rgba(0, 0, 0, 0.9);
+        --text-secondary: rgba(0, 0, 0, 0.55);
+        --text-tertiary: rgba(0, 0, 0, 0.35);
+        --text-muted: rgba(0, 0, 0, 0.15);
+
+        --gradient-mesh: radial-gradient(at 40% 20%, rgba(139, 92, 246, 0.08) 0px, transparent 50%),
+                         radial-gradient(at 80% 0%, rgba(59, 130, 246, 0.05) 0px, transparent 50%),
+                         radial-gradient(at 0% 50%, rgba(16, 185, 129, 0.04) 0px, transparent 50%);
+
+        --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+        --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+        --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.16);
+      }
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', system-ui, sans-serif;
+      font-size: 13px;
+      line-height: 1.5;
+      background: var(--bg-base);
+      background-image: var(--gradient-mesh);
+      color: var(--text-primary);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    .app-container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      width: 100%;
+    }
+
+    /* ═══════════════════════════════════════════
+       HEADER
+    ═══════════════════════════════════════════ */
+    .header {
+      display: flex;
+      align-items: center;
+      padding: 16px 20px;
+      background: var(--bg-elevated);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border-bottom: 1px solid var(--glass-border);
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: var(--glass-highlight);
+    }
+
+    .logo {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-md);
+      background: var(--gradient-purple);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 14px;
+      box-shadow: var(--shadow-md), 0 0 20px var(--accent-purple-glow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .logo::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      animation: shimmer 3s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { left: -100%; }
+      100% { left: 100%; }
+    }
+
+    .logo svg {
+      width: 20px;
+      height: 20px;
+      fill: white;
+      position: relative;
+      z-index: 1;
+    }
+
+    .header-content {
+      flex: 1;
+    }
+
+    .header-title {
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+      background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .header-subtitle {
+      font-size: 11px;
+      color: var(--text-tertiary);
+      margin-top: 1px;
+    }
+
+    .refresh-btn {
+      width: 36px;
+      height: 36px;
+      background: var(--bg-card);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      color: var(--text-secondary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .refresh-btn:hover {
+      background: var(--bg-card-hover);
+      color: var(--text-primary);
+      border-color: var(--accent-purple);
+      box-shadow: 0 0 20px var(--accent-purple-glow);
+    }
+
+    .refresh-btn.spinning svg {
+      animation: spin 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    /* ═══════════════════════════════════════════
+       TABS
+    ═══════════════════════════════════════════ */
+    .tabs {
+      display: flex;
+      padding: 12px 20px;
+      gap: 8px;
+      background: var(--bg-elevated);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--glass-border);
+      flex-shrink: 0;
+    }
+
+    .tab {
+      flex: 1;
+      padding: 10px 16px;
+      background: var(--bg-card);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tab::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--gradient-purple);
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+
+    .tab:hover {
+      background: var(--bg-card-hover);
+      color: var(--text-primary);
+      border-color: rgba(139, 92, 246, 0.3);
+    }
+
+    .tab.active {
+      background: transparent;
+      border-color: transparent;
+      color: white;
+      box-shadow: var(--shadow-md), 0 0 30px var(--accent-purple-glow);
+    }
+
+    .tab.active::before {
+      opacity: 1;
+    }
+
+    .tab span {
+      position: relative;
+      z-index: 1;
+    }
+
+    .tab-badge {
+      background: rgba(255, 255, 255, 0.15);
+      padding: 3px 8px;
+      border-radius: 20px;
+      font-size: 10px;
+      font-weight: 600;
+      min-width: 20px;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .tab.active .tab-badge {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    /* ═══════════════════════════════════════════
+       CONTENT
+    ═══════════════════════════════════════════ */
+    .content {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 16px 20px;
+    }
+
+    .content::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .content::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .content::-webkit-scrollbar-thumb {
+      background: var(--text-muted);
+      border-radius: 3px;
+    }
+
+    .content::-webkit-scrollbar-thumb:hover {
+      background: var(--text-tertiary);
+    }
+
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ═══════════════════════════════════════════
+       SECTIONS
+    ═══════════════════════════════════════════ */
+    .section {
+      margin-bottom: 20px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      padding-left: 4px;
+    }
+
+    .section-icon {
+      width: 18px;
+      height: 18px;
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .section-icon.review { background: var(--gradient-orange); }
+    .section-icon.unassigned { background: var(--gradient-red); }
+    .section-icon.assigned { background: var(--gradient-blue); }
+    .section-icon.authored { background: var(--gradient-green); }
+
+    .section-icon svg {
+      width: 10px;
+      height: 10px;
+      fill: white;
+    }
+
+    .section-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    .section-count {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-left: auto;
+    }
+
+    /* ═══════════════════════════════════════════
+       ITEMS
+    ═══════════════════════════════════════════ */
+    .item {
+      display: flex;
+      align-items: flex-start;
+      padding: 14px 16px;
+      background: var(--bg-card);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      gap: 14px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .item::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 3px;
+      height: 100%;
+      background: var(--gradient-purple);
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .item:hover {
+      background: var(--bg-card-hover);
+      border-color: rgba(139, 92, 246, 0.2);
+    }
+
+    .item:hover::before {
+      opacity: 1;
+    }
+
+    .item-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .item-icon.mr {
+      background: var(--gradient-purple);
+      box-shadow: 0 4px 12px var(--accent-purple-glow);
+    }
+
+    .item-icon.pipeline {
+      background: var(--gradient-blue);
+      box-shadow: 0 4px 12px var(--accent-blue-glow);
+    }
+
+    .item-icon.pipeline.running {
+      background: var(--gradient-blue);
+      box-shadow: 0 4px 12px var(--accent-blue-glow);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .item-icon.pipeline.failed {
+      background: var(--gradient-red);
+      box-shadow: 0 4px 12px var(--accent-red-glow);
+    }
+
+    .item-icon.pipeline.success {
+      background: var(--gradient-green);
+      box-shadow: 0 4px 12px var(--accent-green-glow);
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 4px 12px var(--accent-blue-glow); }
+      50% { box-shadow: 0 4px 24px var(--accent-blue-glow), 0 0 40px var(--accent-blue-glow); }
+    }
+
+    .item-icon svg {
+      width: 20px;
+      height: 20px;
+      fill: white;
+    }
+
+    .item-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .item-title {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 4px;
+      letter-spacing: -0.2px;
+    }
+
+    .item-subtitle {
+      font-size: 11px;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .item-subtitle code {
+      font-family: 'SF Mono', Monaco, monospace;
+      font-size: 10px;
+      background: var(--bg-base);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: var(--text-tertiary);
+    }
+
+    .item-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .item-tag {
+      font-size: 10px;
+      font-weight: 500;
+      padding: 4px 10px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .item-tag.review {
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--accent-orange);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .item-tag.unassigned {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--accent-red);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .item-tag.author {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--accent-green);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .item-tag.running {
+      background: rgba(59, 130, 246, 0.15);
+      color: var(--accent-blue);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+
+    .item-tag.failed {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--accent-red);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .item-tag.success {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--accent-green);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .item-tag.pending {
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--accent-orange);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .item-time {
+      font-size: 11px;
+      color: var(--text-tertiary);
+      flex-shrink: 0;
+      align-self: flex-start;
+      margin-top: 2px;
+    }
+
+    .item-dismiss {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      background: transparent;
+      border: none;
+      color: var(--text-tertiary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: all 0.15s ease;
+      flex-shrink: 0;
+      margin-left: 8px;
+    }
+
+    .item:hover .item-dismiss {
+      opacity: 1;
+    }
+
+    .item-dismiss:hover {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--accent-red);
+    }
+
+    .item-dismiss svg {
+      width: 14px;
+      height: 14px;
+      fill: currentColor;
+    }
+
+    .dismissed-notice {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 16px;
+      background: var(--bg-card);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      margin-bottom: 12px;
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .dismissed-notice button {
+      background: transparent;
+      border: 1px solid var(--glass-border);
+      color: var(--text-primary);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .dismissed-notice button:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--accent-purple);
+    }
+
+    /* ═══════════════════════════════════════════
+       EMPTY STATE
+    ═══════════════════════════════════════════ */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 24px;
+      text-align: center;
+    }
+
+    .empty-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      border: 1px solid var(--glass-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .empty-icon::before {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      border-radius: 50%;
+      background: var(--gradient-purple);
+      opacity: 0.2;
+      filter: blur(10px);
+    }
+
+    .empty-icon svg {
+      width: 32px;
+      height: 32px;
+      fill: var(--text-tertiary);
+      position: relative;
+      z-index: 1;
+    }
+
+    .empty-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+      letter-spacing: -0.3px;
+    }
+
+    .empty-desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+      max-width: 260px;
+      line-height: 1.5;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      background: var(--gradient-purple);
+      color: white;
+      border: none;
+      border-radius: var(--radius-lg);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: var(--shadow-md), 0 0 20px var(--accent-purple-glow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .btn:hover {
+      box-shadow: var(--shadow-lg), 0 0 40px var(--accent-purple-glow);
+    }
+
+    .btn:hover::before {
+      left: 100%;
+    }
+
+    /* ═══════════════════════════════════════════
+       FOOTER
+    ═══════════════════════════════════════════ */
+    .footer {
+      padding: 14px 20px;
+      background: var(--bg-elevated);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-top: 1px solid var(--glass-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .footer-status {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      position: relative;
+    }
+
+    .status-dot::after {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      border-radius: 50%;
+      background: inherit;
+      opacity: 0.3;
+      animation: statusPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes statusPulse {
+      0%, 100% { transform: scale(1); opacity: 0.3; }
+      50% { transform: scale(1.5); opacity: 0; }
+    }
+
+    .status-dot.connected { background: var(--accent-green); }
+    .status-dot.warning { background: var(--accent-orange); }
+    .status-dot.error { background: var(--accent-red); }
+    .status-dot.offline { background: var(--text-muted); }
+    .status-dot.offline::after { display: none; }
+
+    .status-text {
+      font-size: 11px;
+      color: var(--text-tertiary);
+    }
+
+    .footer-link {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--accent-purple);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      background: rgba(139, 92, 246, 0.1);
+      border: 1px solid transparent;
+    }
+
+    .footer-link:hover {
+      background: rgba(139, 92, 246, 0.2);
+      border-color: rgba(139, 92, 246, 0.3);
+    }
+
+    /* ═══════════════════════════════════════════
+       PIPELINE JOBS
+    ═══════════════════════════════════════════ */
+    .pipeline-jobs {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--glass-border);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .pipeline-stage {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      background: var(--bg-base);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--glass-border);
+    }
+
+    .stage-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 70px;
+      max-width: 70px;
+      flex-shrink: 0;
+    }
+
+    .stage-icon {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-card);
+    }
+
+    .stage-icon svg {
+      width: 10px;
+      height: 10px;
+      fill: var(--text-tertiary);
+    }
+
+    .stage-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: capitalize;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .stage-jobs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .job-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 10px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: var(--bg-card);
+      border: 1px solid var(--glass-border);
+      color: var(--text-secondary);
+      max-width: 110px;
+      overflow: hidden;
+    }
+
+    .job-chip:hover {
+      box-shadow: var(--shadow-sm);
+    }
+
+    .job-chip .job-status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .job-chip.running .job-status-dot {
+      background: var(--accent-blue);
+      box-shadow: 0 0 6px var(--accent-blue);
+      animation: pulse-dot 1.5s ease-in-out infinite;
+    }
+
+    .job-chip.success .job-status-dot {
+      background: var(--accent-green);
+    }
+
+    .job-chip.failed .job-status-dot {
+      background: var(--accent-red);
+      box-shadow: 0 0 6px var(--accent-red);
+    }
+
+    .job-chip.pending .job-status-dot {
+      background: var(--accent-orange);
+    }
+
+    .job-chip.skipped .job-status-dot,
+    .job-chip.canceled .job-status-dot,
+    .job-chip.manual .job-status-dot,
+    .job-chip.created .job-status-dot {
+      background: var(--text-muted);
+    }
+
+    .job-chip.running {
+      border-color: rgba(59, 130, 246, 0.4);
+      color: var(--accent-blue);
+    }
+
+    .job-chip.success {
+      border-color: rgba(16, 185, 129, 0.3);
+    }
+
+    .job-chip.failed {
+      border-color: rgba(239, 68, 68, 0.4);
+      color: var(--accent-red);
+    }
+
+    .job-chip.pending {
+      border-color: rgba(245, 158, 11, 0.3);
+    }
+
+    .job-chip:hover.running {
+      background: rgba(59, 130, 246, 0.1);
+    }
+
+    .job-chip:hover.success {
+      background: rgba(16, 185, 129, 0.1);
+    }
+
+    .job-chip:hover.failed {
+      background: rgba(239, 68, 68, 0.1);
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .job-name {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* ═══════════════════════════════════════════
+       RELEASES
+    ═══════════════════════════════════════════ */
+    .release-item {
+      position: relative;
+    }
+
+    .item-icon.release {
+      background: var(--gradient-green);
+      box-shadow: 0 4px 12px var(--accent-green-glow);
+    }
+
+    .item-icon.release svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .release-deployment {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--glass-border);
+    }
+
+    .deployment-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    .deployment-badge.success {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--accent-green);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .deployment-badge.running {
+      background: rgba(59, 130, 246, 0.15);
+      color: var(--accent-blue);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+
+    .deployment-badge.failed {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--accent-red);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .deployment-badge.created,
+    .deployment-badge.pending {
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--accent-orange);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .deployment-badge.none {
+      background: var(--bg-card);
+      color: var(--text-tertiary);
+      border: 1px solid var(--glass-border);
+    }
+
+    .deployment-badge svg {
+      width: 12px;
+      height: 12px;
+      fill: currentColor;
+    }
+
+    .deployment-env {
+      font-size: 10px;
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .release-tag {
+      font-family: 'SF Mono', Monaco, monospace;
+      font-size: 11px;
+      background: rgba(139, 92, 246, 0.15);
+      color: var(--accent-purple);
+      padding: 3px 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(139, 92, 246, 0.3);
+    }
+
+    /* ═══════════════════════════════════════════
+       ENHANCED MR & PIPELINE DISPLAY
+    ═══════════════════════════════════════════ */
+    .item-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .item-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--glass-border);
+      flex-shrink: 0;
+    }
+
+    .item-avatar-placeholder {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--gradient-purple);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 600;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .item-author-info {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .item-author-name {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .item-author-username {
+      font-size: 10px;
+      color: var(--text-tertiary);
+    }
+
+    .branch-info {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+
+    .branch-tag {
+      font-family: 'SF Mono', Monaco, monospace;
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: var(--bg-base);
+      border: 1px solid var(--glass-border);
+      color: var(--text-secondary);
+      max-width: 120px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .branch-tag.source {
+      background: rgba(59, 130, 246, 0.1);
+      border-color: rgba(59, 130, 246, 0.3);
+      color: var(--accent-blue);
+    }
+
+    .branch-tag.target {
+      background: rgba(16, 185, 129, 0.1);
+      border-color: rgba(16, 185, 129, 0.3);
+      color: var(--accent-green);
+    }
+
+    .branch-arrow {
+      color: var(--text-muted);
+      font-size: 10px;
+    }
+
+    .people-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    .people-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .people-label {
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .people-avatars {
+      display: flex;
+      align-items: center;
+    }
+
+    .people-avatars .mini-avatar {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 2px solid var(--bg-card);
+      margin-left: -6px;
+      object-fit: cover;
+    }
+
+    .people-avatars .mini-avatar:first-child {
+      margin-left: 0;
+    }
+
+    .people-avatars .mini-avatar-placeholder {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 2px solid var(--bg-card);
+      margin-left: -6px;
+      background: var(--gradient-blue);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 8px;
+      font-weight: 600;
+      color: white;
+    }
+
+    .people-avatars .mini-avatar-placeholder:first-child {
+      margin-left: 0;
+    }
+
+    .draft-badge {
+      font-size: 9px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--accent-orange);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .conflict-badge {
+      font-size: 9px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--accent-red);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .pipeline-trigger {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid var(--glass-border);
+    }
+
+    .pipeline-trigger-label {
+      font-size: 10px;
+      color: var(--text-tertiary);
+    }
+
+    .pipeline-trigger-user {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pipeline-trigger-user img {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+    }
+
+    .pipeline-trigger-user span {
+      font-size: 11px;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .pipeline-branch {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-family: 'SF Mono', Monaco, monospace;
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: rgba(139, 92, 246, 0.15);
+      color: var(--accent-purple);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+    }
+
+    .pipeline-branch svg {
+      width: 12px;
+      height: 12px;
+      fill: currentColor;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+  <div class="header">
+    <div class="logo">
+      <svg viewBox="0 0 24 24"><path d="M22.65 14.39L12 22.13 1.35 14.39a.84.84 0 0 1-.3-.94l1.22-3.78 2.44-7.51A.42.42 0 0 1 4.82 2a.43.43 0 0 1 .58 0 .42.42 0 0 1 .11.18l2.44 7.49h8.1l2.44-7.51A.42.42 0 0 1 18.6 2a.43.43 0 0 1 .58 0 .42.42 0 0 1 .11.18l2.44 7.51L23 13.45a.84.84 0 0 1-.35.94z"/></svg>
+    </div>
+    <div class="header-content">
+      <div class="header-title">GitLabBar</div>
+      <div class="header-subtitle" id="headerSubtitle">Loading...</div>
+    </div>
+    <button class="refresh-btn" id="refreshBtn" title="Refresh">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+        <path d="M13.65 2.35A8 8 0 1 0 16 8h-2a6 6 0 1 1-1.76-4.24L10 6h6V0l-2.35 2.35z"/>
+      </svg>
+    </button>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="mrs">
+      <span>MRs</span>
+      <span class="tab-badge" id="mrCount">0</span>
+    </button>
+    <button class="tab" data-tab="pipelines">
+      <span>Pipelines</span>
+      <span class="tab-badge" id="pipelineCount">0</span>
+    </button>
+    <button class="tab" data-tab="releases">
+      <span>Releases</span>
+      <span class="tab-badge" id="releaseCount">0</span>
+    </button>
+  </div>
+
+  <div class="content">
+    <div class="tab-content active" id="mrs-content">
+      <div class="empty-state" id="mrs-empty">
+        <div class="empty-icon">
+          <svg viewBox="0 0 24 24"><path d="M6 3a3 3 0 0 0-3 3v2.25a3 3 0 0 0 3 3h.75v2.25a3 3 0 0 0 3 3h1.5V18a3 3 0 0 0 3 3h3a3 3 0 0 0 3-3v-2.25a3 3 0 0 0-3-3h-.75V10.5a3 3 0 0 0-3-3h-1.5V6a3 3 0 0 0-3-3H6z"/></svg>
+        </div>
+        <div class="empty-title">No Merge Requests</div>
+        <div class="empty-desc">Add your GitLab account to track your merge requests in real-time</div>
+        <button class="btn" id="addAccountBtn">Configure GitLab</button>
+      </div>
+      <div id="mrs-list"></div>
+    </div>
+
+    <div class="tab-content" id="pipelines-content">
+      <div class="empty-state" id="pipelines-empty">
+        <div class="empty-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+        </div>
+        <div class="empty-title">No Pipelines</div>
+        <div class="empty-desc">Active pipelines from your projects will appear here automatically</div>
+      </div>
+      <div id="pipelines-list"></div>
+    </div>
+
+    <div class="tab-content" id="releases-content">
+      <div class="empty-state" id="releases-empty">
+        <div class="empty-icon">
+          <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+        </div>
+        <div class="empty-title">No Releases</div>
+        <div class="empty-desc">Configure projects to follow in preferences to see their releases</div>
+        <button class="btn" id="configReleasesBtn">Configure projects</button>
+      </div>
+      <div id="releases-list"></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-status">
+      <div class="status-indicator">
+        <span class="status-dot offline" id="statusDot"></span>
+        <span class="status-text" id="lastUpdate">Not connected</span>
+      </div>
+    </div>
+    <span class="footer-link" id="prefsLink">Preferences</span>
+  </div>
+  </div>
+
+  <script>
+    // State
+    let currentTab = 'mrs';
+    let mergeRequests = [];
+    let pipelines = [];
+    let releases = [];
+    let lastUpdated = null;
+
+    // DOM Elements
+    const tabs = document.querySelectorAll('.tab');
+    const tabContents = document.querySelectorAll('.tab-content');
+    const refreshBtn = document.getElementById('refreshBtn');
+    const addAccountBtn = document.getElementById('addAccountBtn');
+    const configReleasesBtn = document.getElementById('configReleasesBtn');
+    const prefsLink = document.getElementById('prefsLink');
+    const mrCount = document.getElementById('mrCount');
+    const pipelineCount = document.getElementById('pipelineCount');
+    const releaseCount = document.getElementById('releaseCount');
+    const statusDot = document.getElementById('statusDot');
+    const lastUpdate = document.getElementById('lastUpdate');
+    const headerSubtitle = document.getElementById('headerSubtitle');
+
+    // Tab switching
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const tabName = tab.dataset.tab;
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        tabContents.forEach(c => c.classList.remove('active'));
+        document.getElementById(`${tabName}-content`).classList.add('active');
+        currentTab = tabName;
+      });
+    });
+
+    // Refresh
+    refreshBtn.addEventListener('click', () => {
+      refreshBtn.classList.add('spinning');
+      refresh().finally(() => {
+        setTimeout(() => refreshBtn.classList.remove('spinning'), 500);
+      });
+    });
+
+    // Preferences
+    prefsLink.addEventListener('click', openPreferences);
+    addAccountBtn.addEventListener('click', openPreferences);
+    configReleasesBtn.addEventListener('click', openPreferences);
+
+    function openPreferences() {
+      if (window.gitlabbar && window.gitlabbar.app) {
+        window.gitlabbar.app.showPreferences();
+      }
+    }
+
+    // Update header subtitle
+    function updateHeaderSubtitle() {
+      const total = mergeRequests.length + pipelines.length + releases.length;
+      if (total === 0) {
+        headerSubtitle.textContent = 'No activity';
+      } else {
+        const parts = [];
+        if (mergeRequests.length > 0) parts.push(`${mergeRequests.length} MR${mergeRequests.length > 1 ? 's' : ''}`);
+        if (pipelines.length > 0) parts.push(`${pipelines.length} pipeline${pipelines.length > 1 ? 's' : ''}`);
+        if (releases.length > 0) parts.push(`${releases.length} release${releases.length > 1 ? 's' : ''}`);
+        headerSubtitle.textContent = parts.join(' • ');
+      }
+    }
+
+    // Render MRs
+    let dismissedMRIds = [];
+
+    async function loadDismissedMRs() {
+      try {
+        if (window.gitlabbar && window.gitlabbar.config) {
+          const config = await window.gitlabbar.config.getAll();
+          dismissedMRIds = config.dismissedMRs || [];
+        }
+      } catch (err) {
+        console.error('Error loading dismissed MRs:', err);
+      }
+    }
+
+    function renderMRs() {
+      const list = document.getElementById('mrs-list');
+      const empty = document.getElementById('mrs-empty');
+
+      // Filter hidden MRs
+      const visibleMRs = mergeRequests.filter(mr => !dismissedMRIds.includes(mr.id));
+      const dismissedCount = mergeRequests.length - visibleMRs.length;
+
+      mrCount.textContent = visibleMRs.length;
+      updateHeaderSubtitle();
+
+      if (visibleMRs.length === 0 && dismissedCount === 0) {
+        empty.style.display = 'flex';
+        list.innerHTML = '';
+        return;
+      }
+
+      empty.style.display = 'none';
+
+      // Group by role
+      const toReview = visibleMRs.filter(mr => mr.userRole === 'reviewer');
+      const assigned = visibleMRs.filter(mr => mr.userRole === 'assignee');
+      const authored = visibleMRs.filter(mr => mr.userRole === 'author');
+      const unassigned = visibleMRs.filter(mr => mr.userRole === 'unassigned');
+
+      let html = '';
+
+      // Notice if MRs are hidden
+      if (dismissedCount > 0) {
+        html += `
+          <div class="dismissed-notice">
+            <span>${dismissedCount} MR${dismissedCount > 1 ? 's' : ''} hidden</span>
+            <button id="restoreMRsBtn">Show all</button>
+          </div>
+        `;
+      }
+
+      if (toReview.length > 0) {
+        html += renderSection('To review', toReview, 'review', toReview.length);
+      }
+      if (unassigned.length > 0) {
+        html += renderSection('No reviewer', unassigned, 'unassigned', unassigned.length);
+      }
+      if (assigned.length > 0) {
+        html += renderSection('Assigned', assigned, 'assigned', assigned.length);
+      }
+      if (authored.length > 0) {
+        html += renderSection('Created by me', authored, 'authored', authored.length);
+      }
+
+      list.innerHTML = html;
+
+      // Add click handlers for MR items (but not dismiss button)
+      list.querySelectorAll('.mr-item').forEach(item => {
+        item.addEventListener('click', (e) => {
+          if (e.target.closest('.item-dismiss')) return;
+          const url = item.dataset.url;
+          if (url && window.gitlabbar && window.gitlabbar.app) {
+            window.gitlabbar.app.openExternal(url);
+          }
+        });
+      });
+
+      // Click on dismiss MR
+      list.querySelectorAll('.mr-item .item-dismiss').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          const mrId = parseInt(btn.dataset.id);
+          if (window.gitlabbar && window.gitlabbar.gitlab) {
+            await window.gitlabbar.gitlab.dismissMR(mrId);
+            dismissedMRIds.push(mrId);
+            renderMRs();
+          }
+        });
+      });
+
+      // Button to show all MRs
+      const restoreBtn = document.getElementById('restoreMRsBtn');
+      if (restoreBtn) {
+        restoreBtn.addEventListener('click', async () => {
+          if (window.gitlabbar && window.gitlabbar.gitlab) {
+            await window.gitlabbar.gitlab.restoreMRs();
+            dismissedMRIds = [];
+            renderMRs();
+          }
+        });
+      }
+    }
+
+    function renderSection(title, items, type, count) {
+      const iconSvg = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/></svg>';
+      return `
+        <div class="section">
+          <div class="section-header">
+            <div class="section-icon ${type}">${iconSvg}</div>
+            <span class="section-title">${title}</span>
+            <span class="section-count">${count}</span>
+          </div>
+          ${items.map(mr => {
+            // Author avatar
+            const authorAvatar = mr.author?.avatar_url
+              ? `<img class="item-avatar" src="${escapeHtml(mr.author.avatar_url)}" alt="${escapeHtml(mr.author.name)}" />`
+              : `<div class="item-avatar-placeholder">${(mr.author?.name || '?')[0].toUpperCase()}</div>`;
+
+            // Assignees
+            const assigneesHtml = mr.assignees && mr.assignees.length > 0
+              ? `<div class="people-group">
+                  <span class="people-label">Assigned</span>
+                  <div class="people-avatars">
+                    ${mr.assignees.slice(0, 3).map(a =>
+                      a.avatar_url
+                        ? `<img class="mini-avatar" src="${escapeHtml(a.avatar_url)}" alt="${escapeHtml(a.name)}" title="${escapeHtml(a.name)}" />`
+                        : `<div class="mini-avatar-placeholder" title="${escapeHtml(a.name)}">${a.name[0].toUpperCase()}</div>`
+                    ).join('')}
+                    ${mr.assignees.length > 3 ? `<div class="mini-avatar-placeholder">+${mr.assignees.length - 3}</div>` : ''}
+                  </div>
+                </div>`
+              : '';
+
+            // Reviewers
+            const reviewersHtml = mr.reviewers && mr.reviewers.length > 0
+              ? `<div class="people-group">
+                  <span class="people-label">Reviewers</span>
+                  <div class="people-avatars">
+                    ${mr.reviewers.slice(0, 3).map(r =>
+                      r.avatar_url
+                        ? `<img class="mini-avatar" src="${escapeHtml(r.avatar_url)}" alt="${escapeHtml(r.name)}" title="${escapeHtml(r.name)}" />`
+                        : `<div class="mini-avatar-placeholder" title="${escapeHtml(r.name)}">${r.name[0].toUpperCase()}</div>`
+                    ).join('')}
+                    ${mr.reviewers.length > 3 ? `<div class="mini-avatar-placeholder">+${mr.reviewers.length - 3}</div>` : ''}
+                  </div>
+                </div>`
+              : '';
+
+            // Draft & Conflict badges
+            const draftBadge = mr.draft ? '<span class="draft-badge">Draft</span>' : '';
+            const conflictBadge = mr.hasConflicts ? '<span class="conflict-badge">Conflicts</span>' : '';
+
+            return `
+              <div class="item mr-item" data-url="${mr.webUrl}">
+                <div class="item-content" style="width: 100%;">
+                  <div class="item-header">
+                    ${authorAvatar}
+                    <div class="item-author-info">
+                      <span class="item-author-name">${escapeHtml(mr.author?.name || 'Unknown')}</span>
+                      <span class="item-author-username">@${escapeHtml(mr.author?.username || '')}</span>
+                    </div>
+                    <div style="margin-left: auto; display: flex; align-items: center; gap: 8px;">
+                      <span class="item-time">${formatTime(mr.createdAt)}</span>
+                      <button class="item-dismiss" data-id="${mr.id}" title="Hide this MR" style="opacity: 0.5;">
+                        <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="item-title" style="margin-bottom: 6px;">${draftBadge} ${escapeHtml(mr.title)}</div>
+                  <div class="item-subtitle" style="margin-bottom: 4px;">
+                    ${escapeHtml(mr.projectPath || mr.projectName)}
+                    <code>!${mr.iid}</code>
+                    ${conflictBadge}
+                  </div>
+                  <div class="branch-info">
+                    <span class="branch-tag source" title="${escapeHtml(mr.sourceBranch)}">${escapeHtml(mr.sourceBranch)}</span>
+                    <span class="branch-arrow">→</span>
+                    <span class="branch-tag target" title="${escapeHtml(mr.targetBranch)}">${escapeHtml(mr.targetBranch)}</span>
+                  </div>
+                  ${(assigneesHtml || reviewersHtml) ? `<div class="people-row">${assigneesHtml}${reviewersHtml}</div>` : ''}
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    // Render Pipelines
+    let dismissedPipelineIds = [];
+
+    async function loadDismissedPipelines() {
+      try {
+        if (window.gitlabbar && window.gitlabbar.config) {
+          const config = await window.gitlabbar.config.getAll();
+          dismissedPipelineIds = config.dismissedPipelines || [];
+        }
+      } catch (err) {
+        console.error('Error loading dismissed pipelines:', err);
+      }
+    }
+
+    function renderPipelines() {
+      const list = document.getElementById('pipelines-list');
+      const empty = document.getElementById('pipelines-empty');
+
+      // Filter hidden pipelines
+      const visiblePipelines = pipelines.filter(p => !dismissedPipelineIds.includes(p.id));
+      const dismissedCount = pipelines.length - visiblePipelines.length;
+
+      pipelineCount.textContent = visiblePipelines.length;
+      updateHeaderSubtitle();
+
+      if (visiblePipelines.length === 0 && dismissedCount === 0) {
+        empty.style.display = 'flex';
+        list.innerHTML = '';
+        return;
+      }
+
+      empty.style.display = 'none';
+
+      let html = '';
+
+      // Notice if pipelines are hidden
+      if (dismissedCount > 0) {
+        html += `
+          <div class="dismissed-notice">
+            <span>${dismissedCount} pipeline${dismissedCount > 1 ? 's' : ''} hidden</span>
+            <button id="restorePipelinesBtn">Show all</button>
+          </div>
+        `;
+      }
+
+      html += visiblePipelines.map(pipeline => {
+        const statusClass = pipeline.status;
+        const statusText = {
+          running: 'Running',
+          failed: 'Failed',
+          success: 'Success',
+          pending: 'Pending',
+          canceled: 'Canceled'
+        }[pipeline.status] || pipeline.status;
+
+        // Group jobs by stage
+        const jobsByStage = {};
+        if (pipeline.jobs && pipeline.jobs.length > 0) {
+          pipeline.jobs.forEach(job => {
+            if (!jobsByStage[job.stage]) {
+              jobsByStage[job.stage] = [];
+            }
+            jobsByStage[job.stage].push(job);
+          });
+        }
+
+        const jobsHtml = Object.keys(jobsByStage).length > 0 ? `
+          <div class="pipeline-jobs">
+            ${Object.entries(jobsByStage).map(([stage, jobs]) => `
+              <div class="pipeline-stage">
+                <div class="stage-header">
+                  <div class="stage-icon">
+                    <svg viewBox="0 0 16 16"><path d="M8 4a4 4 0 1 1 0 8 4 4 0 0 1 0-8z"/></svg>
+                  </div>
+                  <span class="stage-label">${escapeHtml(stage)}</span>
+                </div>
+                <div class="stage-jobs">
+                  ${jobs.map(job => `
+                    <span class="job-chip ${job.status}" data-url="${job.webUrl}" title="${escapeHtml(job.name)}">
+                      <span class="job-status-dot"></span>
+                      <span class="job-name">${escapeHtml(job.name)}</span>
+                    </span>
+                  `).join('')}
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        ` : '';
+
+        // User who triggered the pipeline
+        const userHtml = pipeline.user ? `
+          <div class="pipeline-trigger">
+            <span class="pipeline-trigger-label">Triggered by</span>
+            <div class="pipeline-trigger-user">
+              ${pipeline.user.avatar_url
+                ? `<img src="${escapeHtml(pipeline.user.avatar_url)}" alt="${escapeHtml(pipeline.user.name)}" />`
+                : ''}
+              <span>${escapeHtml(pipeline.user.name || pipeline.user.username)}</span>
+            </div>
+          </div>
+        ` : '';
+
+        // Source of the pipeline
+        const sourceText = {
+          push: 'Push',
+          web: 'Web',
+          schedule: 'Schedule',
+          api: 'API',
+          trigger: 'Trigger',
+          merge_request_event: 'MR',
+          pipeline: 'Pipeline',
+          parent_pipeline: 'Parent',
+          external: 'External'
+        }[pipeline.source] || pipeline.source;
+
+        return `
+          <div class="item pipeline-item" data-url="${pipeline.webUrl}">
+            <div class="item-icon pipeline ${statusClass}">
+              <svg viewBox="0 0 16 16"><path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zm${pipeline.status === 'running' ? '-.5 4.75a.75.75 0 0 1 1.5 0v3.5a.75.75 0 0 1-1.5 0v-3.5zM8 12a1 1 0 1 1 0-2 1 1 0 0 1 0 2' : '3.5 7.5a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h7'}z"/></svg>
+            </div>
+            <div class="item-content">
+              <div class="item-header" style="margin-bottom: 6px;">
+                <div style="flex: 1;">
+                  <div class="item-title" style="margin-bottom: 4px;">${escapeHtml(pipeline.projectPath || pipeline.projectName || 'Pipeline')}</div>
+                  <div class="item-subtitle">
+                    <span class="pipeline-branch" title="${escapeHtml(pipeline.ref)}">
+                      <svg viewBox="0 0 16 16"><path d="M9.5 3.25a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.492 2.492 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25zm-6 0a.75.75 0 1 0 1.5 0 .75.75 0 0 0-1.5 0zm8.25-.75a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5z"/></svg>
+                      ${escapeHtml(pipeline.ref)}
+                    </span>
+                  </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <span class="item-time">${formatTime(pipeline.createdAt)}</span>
+                  <button class="item-dismiss" data-id="${pipeline.id}" title="Hide this pipeline" style="opacity: 0.5;">
+                    <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                  </button>
+                </div>
+              </div>
+              <div class="item-meta" style="margin-bottom: 8px;">
+                <span class="item-tag ${statusClass}">${statusText}</span>
+                <span class="item-tag" style="background: var(--bg-base); color: var(--text-tertiary); border: 1px solid var(--glass-border);">${sourceText}</span>
+              </div>
+              ${userHtml}
+              ${jobsHtml}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      list.innerHTML = html;
+
+      // Click on pipeline items (but not on jobs or dismiss)
+      list.querySelectorAll('.pipeline-item').forEach(item => {
+        item.addEventListener('click', (e) => {
+          // If clicking on a job or dismiss, don't open the pipeline
+          if (e.target.closest('.job-chip') || e.target.closest('.item-dismiss')) return;
+          const url = item.dataset.url;
+          if (url && window.gitlabbar && window.gitlabbar.app) {
+            window.gitlabbar.app.openExternal(url);
+          }
+        });
+      });
+
+      // Click on individual jobs
+      list.querySelectorAll('.job-chip').forEach(chip => {
+        chip.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const url = chip.dataset.url;
+          if (url && window.gitlabbar && window.gitlabbar.app) {
+            window.gitlabbar.app.openExternal(url);
+          }
+        });
+      });
+
+      // Click on dismiss
+      list.querySelectorAll('.item-dismiss').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          const pipelineId = parseInt(btn.dataset.id);
+          if (window.gitlabbar && window.gitlabbar.gitlab) {
+            await window.gitlabbar.gitlab.dismissPipeline(pipelineId);
+            dismissedPipelineIds.push(pipelineId);
+            renderPipelines();
+          }
+        });
+      });
+
+      // Button to show all
+      const restoreBtn = document.getElementById('restorePipelinesBtn');
+      if (restoreBtn) {
+        restoreBtn.addEventListener('click', async () => {
+          if (window.gitlabbar && window.gitlabbar.gitlab) {
+            await window.gitlabbar.gitlab.restorePipelines();
+            dismissedPipelineIds = [];
+            renderPipelines();
+          }
+        });
+      }
+    }
+
+    // Job status icons
+    function getJobIcon(status) {
+      const icons = {
+        running: '<svg class="job-icon running" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zM1.5 8a6.5 6.5 0 1 1 13 0 6.5 6.5 0 0 1-13 0z"/><path d="M8 3a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 8 3z"/></svg>',
+        success: '<svg class="job-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.75.75 0 1 1 1.06-1.06L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0z"/></svg>',
+        failed: '<svg class="job-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.75.75 0 1 1 1.06 1.06L9.06 8l3.22 3.22a.75.75 0 1 1-1.06 1.06L8 9.06l-3.22 3.22a.75.75 0 0 1-1.06-1.06L6.94 8 3.72 4.78a.75.75 0 0 1 0-1.06z"/></svg>',
+        pending: '<svg class="job-icon" viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="3"/></svg>',
+        skipped: '<svg class="job-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M6.5 3.5a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-1 0V4a.5.5 0 0 1 .5-.5zm3 0a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-1 0V4a.5.5 0 0 1 .5-.5z"/></svg>',
+        canceled: '<svg class="job-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zM5.5 5.5h5v5h-5v-5z"/></svg>',
+        manual: '<svg class="job-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M8 4a.75.75 0 0 1 .75.75v6.5a.75.75 0 0 1-1.5 0v-6.5A.75.75 0 0 1 8 4z"/><path d="M4.75 7.25a.75.75 0 0 0 0 1.5h6.5a.75.75 0 0 0 0-1.5h-6.5z"/></svg>',
+        created: '<svg class="job-icon" viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="2"/></svg>'
+      };
+      return icons[status] || icons.created;
+    }
+
+    // Render Releases
+    let dismissedReleaseIds = [];
+
+    async function loadDismissedReleases() {
+      try {
+        if (window.gitlabbar && window.gitlabbar.config) {
+          const config = await window.gitlabbar.config.getAll();
+          dismissedReleaseIds = config.dismissedReleases || [];
+        }
+      } catch (err) {
+        console.error('Error loading dismissed releases:', err);
+      }
+    }
+
+    function renderReleases() {
+      const list = document.getElementById('releases-list');
+      const empty = document.getElementById('releases-empty');
+
+      // Filter hidden releases
+      const visibleReleases = releases.filter(r => !dismissedReleaseIds.includes(r.id));
+      const dismissedCount = releases.length - visibleReleases.length;
+
+      releaseCount.textContent = visibleReleases.length;
+      updateHeaderSubtitle();
+
+      if (visibleReleases.length === 0 && dismissedCount === 0) {
+        empty.style.display = 'flex';
+        list.innerHTML = '';
+        return;
+      }
+
+      empty.style.display = 'none';
+
+      // Group releases by project
+      const releasesByProject = {};
+      visibleReleases.forEach(release => {
+        const key = release.projectPath || release.projectName || 'Unknown';
+        if (!releasesByProject[key]) {
+          releasesByProject[key] = [];
+        }
+        releasesByProject[key].push(release);
+      });
+
+      let html = '';
+
+      // Notice if releases are hidden
+      if (dismissedCount > 0) {
+        html += `
+          <div class="dismissed-notice">
+            <span>${dismissedCount} release${dismissedCount > 1 ? 's' : ''} hidden</span>
+            <button id="restoreReleasesBtn">Show all</button>
+          </div>
+        `;
+      }
+
+      Object.entries(releasesByProject).forEach(([projectPath, projectReleases]) => {
+        html += `
+          <div class="section">
+            <div class="section-header">
+              <div class="section-icon release" style="background: var(--gradient-green);">
+                <svg viewBox="0 0 24 24" fill="white"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+              </div>
+              <span class="section-title">${escapeHtml(projectPath)}</span>
+              <span class="section-count">${projectReleases.length}</span>
+            </div>
+            ${projectReleases.map(release => {
+              const deploymentStatus = release.deployment?.status || 'none';
+              const deploymentText = {
+                success: 'Deployed',
+                running: 'Deploying...',
+                failed: 'Failed',
+                created: 'Pending',
+                canceled: 'Canceled',
+                none: 'Not deployed'
+              }[deploymentStatus] || 'Unknown';
+
+              const deploymentIcon = {
+                success: '<svg viewBox="0 0 16 16"><path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.75.75 0 1 1 1.06-1.06L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0z"/></svg>',
+                running: '<svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="20" stroke-dashoffset="10"/></svg>',
+                failed: '<svg viewBox="0 0 16 16"><path d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.75.75 0 1 1 1.06 1.06L9.06 8l3.22 3.22a.75.75 0 1 1-1.06 1.06L8 9.06l-3.22 3.22a.75.75 0 0 1-1.06-1.06L6.94 8 3.72 4.78a.75.75 0 0 1 0-1.06z"/></svg>',
+                created: '<svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="3"/></svg>',
+                canceled: '<svg viewBox="0 0 16 16"><path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zM5.5 5.5h5v5h-5v-5z"/></svg>',
+                none: '<svg viewBox="0 0 16 16"><path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zM0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8z"/><path d="M8 4a.75.75 0 0 1 .75.75v2.5h2.5a.75.75 0 0 1 0 1.5h-2.5v2.5a.75.75 0 0 1-1.5 0v-2.5h-2.5a.75.75 0 0 1 0-1.5h2.5v-2.5A.75.75 0 0 1 8 4z"/></svg>'
+              }[deploymentStatus] || '';
+
+              const deploymentEnv = release.deployment?.environment || '';
+
+              return `
+                <div class="item release-item" data-url="${release.webUrl}">
+                  <div class="item-icon release">
+                    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10c.69 0 1.36-.08 2-.21v-2.01c-.64.14-1.31.22-2 .22-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8c0 .69-.08 1.36-.22 2h2.01c.13-.64.21-1.31.21-2 0-5.52-4.48-10-10-10zm-2 13l-4-4 1.41-1.41L10 12.17l6.59-6.59L18 7l-8 8z"/></svg>
+                  </div>
+                  <div class="item-content">
+                    <div class="item-title">${escapeHtml(release.name || release.tagName)}</div>
+                    <div class="item-subtitle">
+                      <span class="release-tag">${escapeHtml(release.tagName)}</span>
+                    </div>
+                    <div class="release-deployment">
+                      <span class="deployment-badge ${deploymentStatus}">
+                        ${deploymentIcon}
+                        ${deploymentText}
+                      </span>
+                      ${deploymentEnv ? `<span class="deployment-env">${escapeHtml(deploymentEnv)}</span>` : ''}
+                    </div>
+                  </div>
+                  <span class="item-time">${formatTime(release.releasedAt || release.createdAt)}</span>
+                  <button class="item-dismiss" data-id="${release.id}" title="Hide this release">
+                    <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                  </button>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `;
+      });
+
+      list.innerHTML = html;
+
+      // Add click handlers (but not on dismiss button)
+      list.querySelectorAll('.release-item').forEach(item => {
+        item.addEventListener('click', (e) => {
+          if (e.target.closest('.item-dismiss')) return;
+          const url = item.dataset.url;
+          if (url && window.gitlabbar && window.gitlabbar.app) {
+            window.gitlabbar.app.openExternal(url);
+          }
+        });
+      });
+
+      // Click on dismiss release
+      list.querySelectorAll('.release-item .item-dismiss').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          const releaseId = parseInt(btn.dataset.id);
+          if (window.gitlabbar && window.gitlabbar.gitlab) {
+            await window.gitlabbar.gitlab.dismissRelease(releaseId);
+            dismissedReleaseIds.push(releaseId);
+            renderReleases();
+          }
+        });
+      });
+
+      // Button to show all releases
+      const restoreBtn = document.getElementById('restoreReleasesBtn');
+      if (restoreBtn) {
+        restoreBtn.addEventListener('click', async () => {
+          if (window.gitlabbar && window.gitlabbar.gitlab) {
+            await window.gitlabbar.gitlab.restoreReleases();
+            dismissedReleaseIds = [];
+            renderReleases();
+          }
+        });
+      }
+    }
+
+    // Utilities
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text || '';
+      return div.innerHTML;
+    }
+
+    function formatTime(dateString) {
+      if (!dateString) return '';
+      const date = new Date(dateString);
+      const now = new Date();
+      const diff = now - date;
+      const minutes = Math.floor(diff / 60000);
+      const hours = Math.floor(diff / 3600000);
+      const days = Math.floor(diff / 86400000);
+
+      if (minutes < 1) return 'now';
+      if (minutes < 60) return `${minutes}m`;
+      if (hours < 24) return `${hours}h`;
+      return `${days}d`;
+    }
+
+    function updateStatus(status) {
+      statusDot.className = 'status-dot ' + status;
+      if (lastUpdated) {
+        const time = new Date(lastUpdated).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+        lastUpdate.textContent = `Updated at ${time}`;
+      }
+    }
+
+    // API calls
+    async function refresh() {
+      try {
+        if (window.gitlabbar && window.gitlabbar.gitlab) {
+          await window.gitlabbar.gitlab.refresh();
+        }
+      } catch (err) {
+        console.error('Refresh error:', err);
+      }
+    }
+
+    async function loadData() {
+      try {
+        if (window.gitlabbar && window.gitlabbar.gitlab) {
+          const mrs = await window.gitlabbar.gitlab.getMRs();
+          const pipes = await window.gitlabbar.gitlab.getPipelines();
+          const rels = await window.gitlabbar.gitlab.getReleases();
+          mergeRequests = mrs || [];
+          pipelines = pipes || [];
+          releases = rels || [];
+          lastUpdated = new Date();
+          updateStatus('connected');
+          renderMRs();
+          renderPipelines();
+          renderReleases();
+        }
+      } catch (err) {
+        console.error('Load error:', err);
+        updateStatus('error');
+      }
+    }
+
+    // Listen for data updates from main process
+    if (window.gitlabbar && window.gitlabbar.on) {
+      window.gitlabbar.on.dataUpdated((data) => {
+        mergeRequests = data.mergeRequests || [];
+        pipelines = data.pipelines || [];
+        releases = data.releases || [];
+        lastUpdated = new Date(data.lastUpdated);
+        updateStatus(data.error ? 'error' : 'connected');
+        renderMRs();
+        renderPipelines();
+        renderReleases();
+      });
+    }
+
+    // Initial render
+    renderMRs();
+    renderPipelines();
+    renderReleases();
+
+    // Load data on start
+    async function init() {
+      await Promise.all([
+        loadDismissedPipelines(),
+        loadDismissedMRs(),
+        loadDismissedReleases()
+      ]);
+      await loadData();
+    }
+    setTimeout(init, 100);
+  </script>
+</body>
+</html>

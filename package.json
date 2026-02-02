@@ -1,0 +1,71 @@
+{
+  "name": "gitlabbar",
+  "productName": "GitLabBar",
+  "version": "1.0.0",
+  "description": "A macOS menu bar app for GitLab - Track merge requests, pipelines, and releases at a glance",
+  "main": ".vite/build/main.js",
+  "scripts": {
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "publish": "electron-forge publish",
+    "lint": "eslint --ext .ts,.tsx ."
+  },
+  "keywords": [
+    "gitlab",
+    "menubar",
+    "electron",
+    "macos",
+    "merge-request",
+    "pipeline",
+    "devtools",
+    "productivity"
+  ],
+  "author": {
+    "name": "Yoan Bernabeu",
+    "email": "ybernabeu@seineyonne.fr"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yoanbernabeu/GitLabBar.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yoanbernabeu/GitLabBar/issues"
+  },
+  "homepage": "https://github.com/yoanbernabeu/GitLabBar#readme",
+  "devDependencies": {
+    "@electron-forge/cli": "^7.11.1",
+    "@electron-forge/maker-deb": "^7.11.1",
+    "@electron-forge/maker-dmg": "^7.11.1",
+    "@electron-forge/maker-rpm": "^7.11.1",
+    "@electron-forge/maker-squirrel": "^7.11.1",
+    "@electron-forge/maker-zip": "^7.11.1",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.11.1",
+    "@electron-forge/plugin-fuses": "^7.11.1",
+    "@electron-forge/plugin-vite": "^7.11.1",
+    "@electron/fuses": "^1.8.0",
+    "@types/electron-squirrel-startup": "^1.0.2",
+    "@types/react": "^19.2.10",
+    "@types/react-dom": "^19.2.3",
+    "@types/uuid": "^10.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.62.0",
+    "@typescript-eslint/parser": "^5.62.0",
+    "@vitejs/plugin-react": "^5.1.2",
+    "electron": "40.1.0",
+    "eslint": "^8.57.1",
+    "eslint-plugin-import": "^2.32.0",
+    "sharp": "^0.34.5",
+    "typescript": "~4.5.4",
+    "vite": "^5.4.21"
+  },
+  "dependencies": {
+    "axios": "^1.13.4",
+    "date-fns": "^4.1.0",
+    "electron-squirrel-startup": "^1.0.1",
+    "electron-store": "^8.2.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "uuid": "^13.0.0"
+  }
+}

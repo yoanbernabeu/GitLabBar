@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <!-- Merge Request icon - green (all good) @2x -->
+  <circle cx="8" cy="8" r="5" fill="#34c759"/>
+  <circle cx="24" cy="8" r="5" fill="#34c759"/>
+  <circle cx="16" cy="26" r="5" fill="#34c759"/>
+  <path d="M8 13 L8 20 Q8 24 12 26 L11 26" stroke="#34c759" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M24 13 L24 20 Q24 24 20 26 L21 26" stroke="#34c759" stroke-width="3" fill="none" stroke-linecap="round"/>
+</svg>
