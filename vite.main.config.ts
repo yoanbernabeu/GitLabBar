@@ -5,11 +5,6 @@ export default defineConfig({
     rollupOptions: {
       external: [
         'electron',
-        'electron-store',
-        'axios',
-        'uuid',
-        'path',
-        'fs',
       ],
     },
   },
