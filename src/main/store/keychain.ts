@@ -1,11 +1,16 @@
 import { safeStorage } from 'electron';
 import Store from 'electron-store';
 
-interface EncryptedTokens {
-  [accountId: string]: string; // Base64 encoded encrypted token
+interface TokenData {
+  value: string;
+  encrypted: boolean;
 }
 
-const tokenStore = new Store<{ tokens: EncryptedTokens }>({
+interface TokensStore {
+  [accountId: string]: TokenData;
+}
+
+const tokenStore = new Store<{ tokens: TokensStore }>({
   name: 'tokens',
   defaults: {
     tokens: {},
@@ -18,16 +23,22 @@ export const keychain = {
   },
 
   saveToken(accountId: string, token: string): boolean {
-    if (!safeStorage.isEncryptionAvailable()) {
-      console.error('Encryption is not available on this system');
-      return false;
-    }
-
     try {
-      const encrypted = safeStorage.encryptString(token);
-      const base64 = encrypted.toString('base64');
       const tokens = (tokenStore as any).get('tokens', {});
-      tokens[accountId] = base64;
+
+      if (safeStorage.isEncryptionAvailable()) {
+        // Use secure encryption when available
+        const encrypted = safeStorage.encryptString(token);
+        const base64 = encrypted.toString('base64');
+        tokens[accountId] = { value: base64, encrypted: true };
+      } else {
+        // Fallback: store with basic obfuscation (not secure, but functional)
+        // Note: This is for unsigned apps during development
+        console.warn('safeStorage not available, using fallback storage (less secure)');
+        const obfuscated = Buffer.from(token).toString('base64');
+        tokens[accountId] = { value: obfuscated, encrypted: false };
+      }
+
       (tokenStore as any).set('tokens', tokens);
       return true;
     } catch (error) {
@@ -37,19 +48,25 @@ export const keychain = {
   },
 
   getToken(accountId: string): string | null {
-    if (!safeStorage.isEncryptionAvailable()) {
-      console.error('Encryption is not available on this system');
-      return null;
-    }
-
     try {
       const tokens = (tokenStore as any).get('tokens', {});
-      const base64 = tokens[accountId];
-      if (!base64) {
+      const tokenData = tokens[accountId];
+
+      if (!tokenData) {
         return null;
       }
-      const encrypted = Buffer.from(base64, 'base64');
-      return safeStorage.decryptString(encrypted);
+
+      if (tokenData.encrypted) {
+        if (!safeStorage.isEncryptionAvailable()) {
+          console.error('Token was encrypted but safeStorage is not available');
+          return null;
+        }
+        const encrypted = Buffer.from(tokenData.value, 'base64');
+        return safeStorage.decryptString(encrypted);
+      } else {
+        // Fallback: decode basic obfuscation
+        return Buffer.from(tokenData.value, 'base64').toString('utf-8');
+      }
     } catch (error) {
       console.error('Failed to get token:', error);
       return null;
