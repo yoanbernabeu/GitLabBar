@@ -12,10 +12,14 @@ export interface PollingData {
   error?: string;
 }
 
-// Path to icons
+// Path to icons and renderer files
 const ICONS_PATH = app.isPackaged
   ? path.join(process.resourcesPath, 'assets/icons')
   : path.join(app.getAppPath(), 'assets/icons');
+
+const RENDERER_PATH = app.isPackaged
+  ? path.join(process.resourcesPath, 'renderer')
+  : path.join(app.getAppPath(), 'src/renderer');
 
 // Store for window size
 const windowStore = new Store<{ menuWindowSize: { width: number; height: number } }>({
@@ -165,9 +169,9 @@ class TrayManager {
     });
 
     // Load the HTML file
-    const rendererPath = path.join(app.getAppPath(), 'src/renderer/index.html');
-    console.log('Loading renderer from:', rendererPath);
-    this.menuWindow.loadFile(rendererPath);
+    const indexPath = path.join(RENDERER_PATH, 'index.html');
+    console.log('Loading renderer from:', indexPath);
+    this.menuWindow.loadFile(indexPath);
 
     this.positionWindow(this.menuWindow, bounds);
     this.menuWindow.show();
@@ -248,7 +252,7 @@ class TrayManager {
       },
     });
 
-    const prefsPath = path.join(app.getAppPath(), 'src/renderer/preferences.html');
+    const prefsPath = path.join(RENDERER_PATH, 'preferences.html');
     console.log('Loading preferences from:', prefsPath);
     this.preferencesWindow.loadFile(prefsPath);
 

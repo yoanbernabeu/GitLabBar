@@ -18,6 +18,10 @@ const config: ForgeConfig = {
     extendInfo: {
       LSUIElement: true, // Hide from Dock (menu bar app)
     },
+    extraResource: [
+      './assets',
+      './src/renderer',
+    ],
   },
   rebuildConfig: {},
   makers: [
