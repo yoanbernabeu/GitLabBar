@@ -1293,6 +1293,37 @@
       height: 12px;
       fill: currentColor;
     }
+
+    /* ═══════════════════════════════════════════
+       LOADING STATE
+    ═══════════════════════════════════════════ */
+    .loading-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 24px;
+      text-align: center;
+    }
+
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--glass-border);
+      border-top-color: var(--accent-purple);
+      border-radius: 50%;
+      animation: loading-spin 0.8s linear infinite;
+      margin-bottom: 16px;
+    }
+
+    @keyframes loading-spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
   </style>
 </head>
 <body>
@@ -1329,19 +1360,27 @@
 
   <div class="content">
     <div class="tab-content active" id="mrs-content">
-      <div class="empty-state" id="mrs-empty">
+      <div class="loading-state" id="mrs-loading">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Loading merge requests...</div>
+      </div>
+      <div class="empty-state" id="mrs-empty" style="display: none;">
         <div class="empty-icon">
           <svg viewBox="0 0 24 24"><path d="M6 3a3 3 0 0 0-3 3v2.25a3 3 0 0 0 3 3h.75v2.25a3 3 0 0 0 3 3h1.5V18a3 3 0 0 0 3 3h3a3 3 0 0 0 3-3v-2.25a3 3 0 0 0-3-3h-.75V10.5a3 3 0 0 0-3-3h-1.5V6a3 3 0 0 0-3-3H6z"/></svg>
         </div>
-        <div class="empty-title">No Merge Requests</div>
-        <div class="empty-desc">Add your GitLab account to track your merge requests in real-time</div>
-        <button class="btn" id="addAccountBtn">Configure GitLab</button>
+        <div class="empty-title" id="mrs-empty-title">No Merge Requests</div>
+        <div class="empty-desc" id="mrs-empty-desc">Add your GitLab account to track your merge requests in real-time</div>
+        <button class="btn" id="addAccountBtn" style="display: none;">Configure GitLab</button>
       </div>
       <div id="mrs-list"></div>
     </div>
 
     <div class="tab-content" id="pipelines-content">
-      <div class="empty-state" id="pipelines-empty">
+      <div class="loading-state" id="pipelines-loading">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Loading pipelines...</div>
+      </div>
+      <div class="empty-state" id="pipelines-empty" style="display: none;">
         <div class="empty-icon">
           <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
         </div>
@@ -1352,7 +1391,11 @@
     </div>
 
     <div class="tab-content" id="releases-content">
-      <div class="empty-state" id="releases-empty">
+      <div class="loading-state" id="releases-loading">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Loading releases...</div>
+      </div>
+      <div class="empty-state" id="releases-empty" style="display: none;">
         <div class="empty-icon">
           <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
         </div>
@@ -1382,6 +1425,8 @@
     let pipelines = [];
     let releases = [];
     let lastUpdated = null;
+    let isLoading = true;
+    let hasAccounts = false;
 
     // DOM Elements
     const tabs = document.querySelectorAll('.tab');
@@ -1459,6 +1504,10 @@
     function renderMRs() {
       const list = document.getElementById('mrs-list');
       const empty = document.getElementById('mrs-empty');
+      const loading = document.getElementById('mrs-loading');
+      const emptyTitle = document.getElementById('mrs-empty-title');
+      const emptyDesc = document.getElementById('mrs-empty-desc');
+      const addAccountBtnEl = document.getElementById('addAccountBtn');
 
       // Filter hidden MRs
       const visibleMRs = mergeRequests.filter(mr => !dismissedMRIds.includes(mr.id));
@@ -1467,8 +1516,28 @@
       mrCount.textContent = visibleMRs.length;
       updateHeaderSubtitle();
 
+      // Handle loading state
+      if (isLoading) {
+        loading.style.display = 'flex';
+        empty.style.display = 'none';
+        list.innerHTML = '';
+        return;
+      }
+
+      loading.style.display = 'none';
+
       if (visibleMRs.length === 0 && dismissedCount === 0) {
         empty.style.display = 'flex';
+        // Customize message based on whether accounts are configured
+        if (!hasAccounts) {
+          emptyTitle.textContent = 'No Merge Requests';
+          emptyDesc.textContent = 'Add your GitLab account to track your merge requests in real-time';
+          addAccountBtnEl.style.display = 'inline-block';
+        } else {
+          emptyTitle.textContent = 'No Merge Requests';
+          emptyDesc.textContent = 'No open merge requests found for your account';
+          addAccountBtnEl.style.display = 'none';
+        }
         list.innerHTML = '';
         return;
       }
@@ -1648,6 +1717,7 @@
     function renderPipelines() {
       const list = document.getElementById('pipelines-list');
       const empty = document.getElementById('pipelines-empty');
+      const loading = document.getElementById('pipelines-loading');
 
       // Filter hidden pipelines
       const visiblePipelines = pipelines.filter(p => !dismissedPipelineIds.includes(p.id));
@@ -1655,6 +1725,16 @@
 
       pipelineCount.textContent = visiblePipelines.length;
       updateHeaderSubtitle();
+
+      // Handle loading state
+      if (isLoading) {
+        loading.style.display = 'flex';
+        empty.style.display = 'none';
+        list.innerHTML = '';
+        return;
+      }
+
+      loading.style.display = 'none';
 
       if (visiblePipelines.length === 0 && dismissedCount === 0) {
         empty.style.display = 'flex';
@@ -1864,6 +1944,7 @@
     function renderReleases() {
       const list = document.getElementById('releases-list');
       const empty = document.getElementById('releases-empty');
+      const loading = document.getElementById('releases-loading');
 
       // Filter hidden releases
       const visibleReleases = releases.filter(r => !dismissedReleaseIds.includes(r.id));
@@ -1871,6 +1952,16 @@
 
       releaseCount.textContent = visibleReleases.length;
       updateHeaderSubtitle();
+
+      // Handle loading state
+      if (isLoading) {
+        loading.style.display = 'flex';
+        empty.style.display = 'none';
+        list.innerHTML = '';
+        return;
+      }
+
+      loading.style.display = 'none';
 
       if (visibleReleases.length === 0 && dismissedCount === 0) {
         empty.style.display = 'flex';
@@ -2054,6 +2145,7 @@
           pipelines = pipes || [];
           releases = rels || [];
           lastUpdated = new Date();
+          isLoading = false;
           updateStatus('connected');
           renderMRs();
           renderPipelines();
@@ -2061,17 +2153,24 @@
         }
       } catch (err) {
         console.error('Load error:', err);
+        isLoading = false;
         updateStatus('error');
+        renderMRs();
+        renderPipelines();
+        renderReleases();
       }
     }
 
     // Listen for data updates from main process
     if (window.gitlabbar && window.gitlabbar.on) {
-      window.gitlabbar.on.dataUpdated((data) => {
+      window.gitlabbar.on.dataUpdated(async (data) => {
         mergeRequests = data.mergeRequests || [];
         pipelines = data.pipelines || [];
         releases = data.releases || [];
         lastUpdated = new Date(data.lastUpdated);
+        isLoading = false;
+        // Check accounts in case they were added/removed
+        await checkAccounts();
         updateStatus(data.error ? 'error' : 'connected');
         renderMRs();
         renderPipelines();
@@ -2079,13 +2178,27 @@
       });
     }
 
-    // Initial render
+    // Check if accounts are configured
+    async function checkAccounts() {
+      try {
+        if (window.gitlabbar && window.gitlabbar.accounts) {
+          const accounts = await window.gitlabbar.accounts.getAll();
+          hasAccounts = accounts && accounts.length > 0;
+        }
+      } catch (err) {
+        console.error('Error checking accounts:', err);
+        hasAccounts = false;
+      }
+    }
+
+    // Initial render (shows loading state)
     renderMRs();
     renderPipelines();
     renderReleases();
 
     // Load data on start
     async function init() {
+      await checkAccounts();
       await Promise.all([
         loadDismissedPipelines(),
         loadDismissedMRs(),
