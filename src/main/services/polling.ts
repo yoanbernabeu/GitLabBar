@@ -121,20 +121,23 @@ class PollingService {
           // Fetch user's active pipelines (running/pending on recent projects)
           const userActivePipelines = await client.getUserActivePipelines();
 
+          // Only keep pipelines from watched projects
+          const watchedProjectIds = config.getWatchedProjectIds();
+          const watchedSet = new Set(watchedProjectIds);
+          const watchedActivePipelines = userActivePipelines.filter(p => watchedSet.has(p.projectId));
+
           // Filter out too old running/pending pipelines (probably stuck)
           const maxRunningAgeMs = 7 * 24 * 60 * 60 * 1000; // 7 jours max pour running/pending
           const now = Date.now();
-          const recentActivePipelines = userActivePipelines.filter(p => {
+          const recentActivePipelines = watchedActivePipelines.filter(p => {
             const pipelineAge = now - new Date(p.createdAt).getTime();
             return pipelineAge <= maxRunningAgeMs;
           });
 
           allPipelines.push(...recentActivePipelines);
 
-          // Also fetch failed pipelines from projects with MRs + watched projects
-          const mrProjectIds = [...new Set(mrs.map(mr => mr.projectId))];
-          const watchedProjectIds = config.getWatchedProjectIds();
-          const allProjectIds = [...new Set([...mrProjectIds, ...watchedProjectIds])];
+          // Also fetch failed pipelines from watched projects only
+          const allProjectIds = [...watchedProjectIds];
 
           if (allProjectIds.length > 0) {
             const pipelines = await client.getAllPipelinesForProjects(allProjectIds);
