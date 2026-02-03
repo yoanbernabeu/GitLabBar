@@ -93,6 +93,7 @@ out/
 
 # Claude Code
 .claude/
+!.claude/skills/
 
 # Internal docs
 prd.md
