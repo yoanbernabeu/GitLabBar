@@ -113,7 +113,23 @@ All notification types can be individually enabled/disabled.
 
 ## Installation
 
-### From Releases (Recommended)
+### Quick Install (one-liner)
+
+**Fresh install:**
+
+```bash
+curl -sL "$(curl -s https://api.github.com/repos/yoanbernabeu/GitLabBar/releases/latest | grep browser_download_url | grep '\.zip' | cut -d '"' -f 4)" -o /tmp/GitLabBar.zip && unzip -qo /tmp/GitLabBar.zip -d /Applications && xattr -cr /Applications/GitLabBar.app && rm /tmp/GitLabBar.zip && echo "GitLabBar installed!"
+```
+
+**Upgrade (replace an existing version):**
+
+```bash
+osascript -e 'quit app "GitLabBar"' 2>/dev/null; rm -rf /Applications/GitLabBar.app && curl -sL "$(curl -s https://api.github.com/repos/yoanbernabeu/GitLabBar/releases/latest | grep browser_download_url | grep '\.zip' | cut -d '"' -f 4)" -o /tmp/GitLabBar.zip && unzip -qo /tmp/GitLabBar.zip -d /Applications && xattr -cr /Applications/GitLabBar.app && rm /tmp/GitLabBar.zip && echo "GitLabBar upgraded!"
+```
+
+> Your configuration (accounts, watched projects, settings) is preserved across upgrades.
+
+### From Releases (manual)
 
 1. Download the latest `.dmg` file from the [Releases](https://github.com/yoanbernabeu/GitLabBar/releases) page
 2. Open the `.dmg` file
@@ -122,7 +138,7 @@ All notification types can be individually enabled/disabled.
 
 ### Bypassing macOS Gatekeeper
 
-Since GitLabBar is not signed with an Apple Developer certificate, macOS Gatekeeper will block the app on first launch. Here's how to allow it:
+Since GitLabBar is not signed with an Apple Developer certificate, macOS will block the app on first launch. The one-liner commands above handle this automatically via `xattr -cr`. If you installed manually, here's how to allow it:
 
 #### Method 1: Right-click to Open (Simplest)
 
