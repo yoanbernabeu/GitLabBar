@@ -130,7 +130,7 @@ echo 'GitLabBar installed!'
 **Upgrade (replace an existing version):**
 
 ```bash
-pkill -f GitLabBar 2>/dev/null; rm -rf /Applications/GitLabBar.app
+killall GitLabBar 2>/dev/null; rm -rf /Applications/GitLabBar.app
 curl -sL https://api.github.com/repos/yoanbernabeu/GitLabBar/releases/latest \
   | grep -o 'https://[^"]*darwin-arm64[^"]*\.zip' \
   | xargs curl -sL -o /tmp/GitLabBar.zip
