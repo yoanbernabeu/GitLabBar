@@ -119,8 +119,8 @@ All notification types can be individually enabled/disabled.
 
 ```bash
 curl -sL https://api.github.com/repos/yoanbernabeu/GitLabBar/releases/latest \
-  | grep -o 'https://[^"]*darwin-arm64[^"]*\.zip' \
-  | xargs curl -sL -o /tmp/GitLabBar.zip
+  | grep darwin-arm64 | grep -o 'https://.*\.zip' \
+  | xargs curl -sLo /tmp/GitLabBar.zip
 unzip -qo /tmp/GitLabBar.zip -d /Applications
 xattr -cr /Applications/GitLabBar.app
 rm /tmp/GitLabBar.zip
@@ -130,10 +130,11 @@ echo 'GitLabBar installed!'
 **Upgrade (replace an existing version):**
 
 ```bash
-killall GitLabBar 2>/dev/null; rm -rf /Applications/GitLabBar.app
+killall GitLabBar 2>/dev/null
+rm -rf /Applications/GitLabBar.app
 curl -sL https://api.github.com/repos/yoanbernabeu/GitLabBar/releases/latest \
-  | grep -o 'https://[^"]*darwin-arm64[^"]*\.zip' \
-  | xargs curl -sL -o /tmp/GitLabBar.zip
+  | grep darwin-arm64 | grep -o 'https://.*\.zip' \
+  | xargs curl -sLo /tmp/GitLabBar.zip
 unzip -qo /tmp/GitLabBar.zip -d /Applications
 xattr -cr /Applications/GitLabBar.app
 rm /tmp/GitLabBar.zip
