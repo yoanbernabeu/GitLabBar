@@ -118,13 +118,13 @@ All notification types can be individually enabled/disabled.
 **Fresh install:**
 
 ```bash
-curl -sL "$(curl -s https://api.github.com/repos/yoanbernabeu/GitLabBar/releases/latest | grep browser_download_url | grep '\.zip' | cut -d '"' -f 4)" -o /tmp/GitLabBar.zip && unzip -qo /tmp/GitLabBar.zip -d /Applications && xattr -cr /Applications/GitLabBar.app && rm /tmp/GitLabBar.zip && echo "GitLabBar installed!"
+URL=$(curl -s https://api.github.com/repos/yoanbernabeu/GitLabBar/releases/latest | grep browser_download_url | grep '\.zip' | cut -d '"' -f 4) && curl -sL "$URL" -o /tmp/GitLabBar.zip && unzip -qo /tmp/GitLabBar.zip -d /Applications && xattr -cr /Applications/GitLabBar.app && rm /tmp/GitLabBar.zip && echo "GitLabBar installed!"
 ```
 
 **Upgrade (replace an existing version):**
 
 ```bash
-osascript -e 'quit app "GitLabBar"' 2>/dev/null; rm -rf /Applications/GitLabBar.app && curl -sL "$(curl -s https://api.github.com/repos/yoanbernabeu/GitLabBar/releases/latest | grep browser_download_url | grep '\.zip' | cut -d '"' -f 4)" -o /tmp/GitLabBar.zip && unzip -qo /tmp/GitLabBar.zip -d /Applications && xattr -cr /Applications/GitLabBar.app && rm /tmp/GitLabBar.zip && echo "GitLabBar upgraded!"
+osascript -e 'quit app "GitLabBar"' 2>/dev/null; rm -rf /Applications/GitLabBar.app; URL=$(curl -s https://api.github.com/repos/yoanbernabeu/GitLabBar/releases/latest | grep browser_download_url | grep '\.zip' | cut -d '"' -f 4) && curl -sL "$URL" -o /tmp/GitLabBar.zip && unzip -qo /tmp/GitLabBar.zip -d /Applications && xattr -cr /Applications/GitLabBar.app && rm /tmp/GitLabBar.zip && echo "GitLabBar upgraded!"
 ```
 
 > Your configuration (accounts, watched projects, settings) is preserved across upgrades.
