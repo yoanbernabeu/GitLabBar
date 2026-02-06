@@ -23,7 +23,7 @@ if [ -d "$APP_PATH" ]; then
 fi
 
 echo "==> Downloading ${APP_NAME}..."
-curl -sL -o "$TMP_ZIP" "$DOWNLOAD_URL"
+curl -#L -o "$TMP_ZIP" "$DOWNLOAD_URL"
 
 echo "==> Installing to /Applications..."
 unzip -qo "$TMP_ZIP" -d /Applications
