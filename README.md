@@ -115,26 +115,13 @@ All notification types can be individually enabled/disabled.
 
 ### Quick Install (one-liner)
 
-**Fresh install:**
+**Install or upgrade with a single command:**
 
 ```bash
-curl -sL https://api.github.com/repos/yoanbernabeu/GitLabBar/releases/latest | grep darwin-arm64 | grep -o 'https://.*\.zip' | xargs curl -sLo /tmp/GitLabBar.zip
-unzip -qo /tmp/GitLabBar.zip -d /Applications
-xattr -cr /Applications/GitLabBar.app
-rm /tmp/GitLabBar.zip
-echo 'GitLabBar installed!'
+curl -fsSL https://raw.githubusercontent.com/yoanbernabeu/GitLabBar/main/install.sh | bash
 ```
 
-**Upgrade (replace an existing version):**
-
-```bash
-killall GitLabBar 2>/dev/null; rm -rf /Applications/GitLabBar.app
-curl -sL https://api.github.com/repos/yoanbernabeu/GitLabBar/releases/latest | grep darwin-arm64 | grep -o 'https://.*\.zip' | xargs curl -sLo /tmp/GitLabBar.zip
-unzip -qo /tmp/GitLabBar.zip -d /Applications
-xattr -cr /Applications/GitLabBar.app
-rm /tmp/GitLabBar.zip
-echo 'GitLabBar upgraded!'
-```
+The script automatically detects if GitLabBar is already installed and handles the upgrade (stop, replace, relaunch).
 
 > Your configuration (accounts, watched projects, settings) is preserved across upgrades.
 
