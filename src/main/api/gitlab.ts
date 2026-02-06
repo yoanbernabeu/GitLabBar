@@ -353,7 +353,7 @@ export class GitLabClient {
     }
   }
 
-  async getDeploymentsForTag(projectId: number, tagName: string): Promise<Deployment | undefined> {
+  async getDeploymentsForTag(projectId: number, tagName: string): Promise<Deployment[]> {
     try {
       const response = await this.client.get<GitLabDeploymentResponse[]>(
         `/projects/${projectId}/deployments`,
@@ -366,25 +366,24 @@ export class GitLabClient {
         }
       );
 
-      // Find a deployment that matches the tag
-      const deployment = response.data.find(
-        (d) => d.deployable?.ref === tagName && d.deployable?.tag === true
-      );
-
-      if (deployment) {
-        return {
-          id: deployment.id,
-          status: deployment.status,
-          environment: deployment.environment?.name || 'production',
-          deployedAt: deployment.updated_at,
+      // Find all deployments that match the tag
+      return response.data
+        .filter((d) => d.deployable?.ref === tagName && d.deployable?.tag === true)
+        .map((d) => ({
+          id: d.id,
+          status: d.status,
+          environment: d.environment?.name || 'production',
+          deployedAt: d.updated_at,
           webUrl: ``, // GitLab n'expose pas directement l'URL du déploiement
-        };
-      }
-
-      return undefined;
+          triggeredBy: d.user ? {
+            name: d.user.name,
+            username: d.user.username,
+            avatar_url: d.user.avatar_url,
+          } : undefined,
+        }));
     } catch (error) {
       console.error(`Failed to fetch deployments for tag ${tagName}:`, error);
-      return undefined;
+      return [];
     }
   }
 
@@ -394,8 +393,8 @@ export class GitLabClient {
     // Fetch deployments for each release
     const releasesWithDeployments = await Promise.all(
       releases.map(async (release) => {
-        const deployment = await this.getDeploymentsForTag(projectId, release.tagName);
-        return { ...release, deployment };
+        const deployments = await this.getDeploymentsForTag(projectId, release.tagName);
+        return { ...release, deployments };
       })
     );
 

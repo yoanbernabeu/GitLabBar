@@ -43,7 +43,7 @@ export const ProjectsTab: React.FC = () => {
 
     setIsLoading(true);
     try {
-      const results = await window.gitlabbar.gitlab.searchProjects(selectedAccountId, searchQuery);
+      const results = await window.gitlabbar.gitlab.searchProjects(searchQuery);
       setProjects(results as Project[]);
     } catch (error) {
       console.error('Error during search:', error);

@@ -199,7 +199,7 @@ class PollingService {
         id: r.id,
         project: r.projectName,
         tagName: r.tagName,
-        deployment: r.deployment?.status || 'none'
+        deployments: r.deployments?.map(d => `${d.environment}:${d.status}`) || []
       })));
 
       const status = this.calculateStatus(allMergeRequests, allPipelines);

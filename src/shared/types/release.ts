@@ -15,7 +15,7 @@ export interface Release {
     name: string;
     avatar_url: string;
   };
-  deployment?: Deployment;
+  deployments?: Deployment[];
   accountId: string;
 }
 
@@ -25,6 +25,11 @@ export interface Deployment {
   environment: string;
   deployedAt?: string;
   webUrl: string;
+  triggeredBy?: {
+    name: string;
+    username: string;
+    avatar_url: string;
+  };
 }
 
 export interface GitLabReleaseResponse {
@@ -57,6 +62,12 @@ export interface GitLabDeploymentResponse {
     id: number;
     ref: string;
     tag: boolean;
+  };
+  user?: {
+    id: number;
+    username: string;
+    name: string;
+    avatar_url: string;
   };
   created_at: string;
   updated_at: string;

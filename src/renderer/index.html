@@ -932,9 +932,28 @@
 
     .job-chip.skipped .job-status-dot,
     .job-chip.canceled .job-status-dot,
-    .job-chip.manual .job-status-dot,
     .job-chip.created .job-status-dot {
       background: var(--text-muted);
+    }
+
+    .job-chip.manual .job-status-dot {
+      background: var(--accent-orange);
+      box-shadow: 0 0 6px var(--accent-orange-glow);
+    }
+
+    .job-chip.manual {
+      border-color: rgba(245, 158, 11, 0.4);
+      color: var(--accent-orange);
+    }
+
+    .job-chip:hover.manual {
+      background: rgba(245, 158, 11, 0.1);
+    }
+
+    .job-manual-icon {
+      font-size: 8px;
+      line-height: 1;
+      flex-shrink: 0;
     }
 
     .job-chip.running {
@@ -997,11 +1016,29 @@
 
     .release-deployment {
       display: flex;
-      align-items: center;
-      gap: 8px;
+      flex-direction: column;
+      gap: 6px;
       margin-top: 10px;
       padding-top: 10px;
       border-top: 1px solid var(--glass-border);
+    }
+
+    .release-deployment-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .deployment-trigger {
+      font-size: 10px;
+      color: var(--text-tertiary);
+      font-style: italic;
+    }
+
+    .deployment-time {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-left: auto;
     }
 
     .deployment-badge {
@@ -1791,6 +1828,7 @@
                   ${jobs.map(job => `
                     <span class="job-chip ${job.status}" data-url="${job.webUrl}" title="${escapeHtml(job.name)}">
                       <span class="job-status-dot"></span>
+                      ${job.status === 'manual' ? '<span class="job-manual-icon">▶</span>' : ''}
                       <span class="job-name">${escapeHtml(job.name)}</span>
                     </span>
                   `).join('')}
@@ -2004,26 +2042,51 @@
               <span class="section-count">${projectReleases.length}</span>
             </div>
             ${projectReleases.map(release => {
-              const deploymentStatus = release.deployment?.status || 'none';
-              const deploymentText = {
+              const deployments = release.deployments || [];
+              const deploymentStatusTexts = {
                 success: 'Deployed',
                 running: 'Deploying...',
                 failed: 'Failed',
                 created: 'Pending',
                 canceled: 'Canceled',
-                none: 'Not deployed'
-              }[deploymentStatus] || 'Unknown';
-
-              const deploymentIcon = {
+              };
+              const deploymentIcons = {
                 success: '<svg viewBox="0 0 16 16"><path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.75.75 0 1 1 1.06-1.06L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0z"/></svg>',
                 running: '<svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="20" stroke-dashoffset="10"/></svg>',
                 failed: '<svg viewBox="0 0 16 16"><path d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.75.75 0 1 1 1.06 1.06L9.06 8l3.22 3.22a.75.75 0 1 1-1.06 1.06L8 9.06l-3.22 3.22a.75.75 0 0 1-1.06-1.06L6.94 8 3.72 4.78a.75.75 0 0 1 0-1.06z"/></svg>',
                 created: '<svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="3"/></svg>',
                 canceled: '<svg viewBox="0 0 16 16"><path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zM5.5 5.5h5v5h-5v-5z"/></svg>',
-                none: '<svg viewBox="0 0 16 16"><path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zM0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8z"/><path d="M8 4a.75.75 0 0 1 .75.75v2.5h2.5a.75.75 0 0 1 0 1.5h-2.5v2.5a.75.75 0 0 1-1.5 0v-2.5h-2.5a.75.75 0 0 1 0-1.5h2.5v-2.5A.75.75 0 0 1 8 4z"/></svg>'
-              }[deploymentStatus] || '';
+              };
 
-              const deploymentEnv = release.deployment?.environment || '';
+              let deploymentsHtml;
+              if (deployments.length === 0) {
+                deploymentsHtml = `
+                  <div class="release-deployment-row">
+                    <span class="deployment-badge none">
+                      <svg viewBox="0 0 16 16"><path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zM0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8z"/><path d="M8 4a.75.75 0 0 1 .75.75v2.5h2.5a.75.75 0 0 1 0 1.5h-2.5v2.5a.75.75 0 0 1-1.5 0v-2.5h-2.5a.75.75 0 0 1 0-1.5h2.5v-2.5A.75.75 0 0 1 8 4z"/></svg>
+                      Not deployed
+                    </span>
+                  </div>`;
+              } else {
+                deploymentsHtml = deployments.map(dep => {
+                  const triggerInfo = dep.triggeredBy
+                    ? `<span class="deployment-trigger">by ${escapeHtml(dep.triggeredBy.name)}</span>`
+                    : '';
+                  const timeInfo = dep.deployedAt
+                    ? `<span class="deployment-time">${formatDateTime(dep.deployedAt)}</span>`
+                    : '';
+                  return `
+                  <div class="release-deployment-row">
+                    <span class="deployment-badge ${dep.status}">
+                      ${deploymentIcons[dep.status] || ''}
+                      ${deploymentStatusTexts[dep.status] || 'Unknown'}
+                    </span>
+                    <span class="deployment-env">${escapeHtml(dep.environment)}</span>
+                    ${triggerInfo}
+                    ${timeInfo}
+                  </div>
+                `}).join('');
+              }
 
               return `
                 <div class="item release-item" data-url="${release.webUrl}">
@@ -2036,11 +2099,7 @@
                       <span class="release-tag">${escapeHtml(release.tagName)}</span>
                     </div>
                     <div class="release-deployment">
-                      <span class="deployment-badge ${deploymentStatus}">
-                        ${deploymentIcon}
-                        ${deploymentText}
-                      </span>
-                      ${deploymentEnv ? `<span class="deployment-env">${escapeHtml(deploymentEnv)}</span>` : ''}
+                      ${deploymentsHtml}
                     </div>
                   </div>
                   <span class="item-time">${formatTime(release.releasedAt || release.createdAt)}</span>
@@ -2099,6 +2158,13 @@
       const div = document.createElement('div');
       div.textContent = text || '';
       return div.innerHTML;
+    }
+
+    function formatDateTime(dateString) {
+      if (!dateString) return '';
+      const date = new Date(dateString);
+      return date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' })
+        + ' ' + date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
     }
 
     function formatTime(dateString) {
