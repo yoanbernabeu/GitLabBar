@@ -1,7 +1,7 @@
 {
   "name": "gitlabbar",
   "productName": "GitLabBar",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "A macOS menu bar app for GitLab - Track merge requests, pipelines, and releases at a glance",
   "main": ".vite/build/main.js",
   "scripts": {
