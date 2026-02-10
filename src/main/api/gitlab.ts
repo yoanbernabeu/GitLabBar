@@ -315,11 +315,11 @@ export class GitLabClient {
     }
   }
 
-  async getReleases(projectId: number, limit: number = 5): Promise<Release[]> {
+  async getReleases(projectId: number, limit: number = 5, page: number = 1): Promise<Release[]> {
     try {
       const response = await this.client.get<GitLabReleaseResponse[]>(
         `/projects/${projectId}/releases`,
-        { params: { per_page: limit, order_by: 'released_at', sort: 'desc' } }
+        { params: { per_page: limit, page, order_by: 'released_at', sort: 'desc' } }
       );
 
       const project = await this.getProject(projectId);
@@ -387,8 +387,8 @@ export class GitLabClient {
     }
   }
 
-  async getReleasesWithDeployments(projectId: number, limit: number = 5): Promise<Release[]> {
-    const releases = await this.getReleases(projectId, limit);
+  async getReleasesWithDeployments(projectId: number, limit: number = 5, page: number = 1): Promise<Release[]> {
+    const releases = await this.getReleases(projectId, limit, page);
 
     // Fetch deployments for each release
     const releasesWithDeployments = await Promise.all(

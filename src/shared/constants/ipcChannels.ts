@@ -19,6 +19,7 @@ export const IPC_CHANNELS = {
   GITLAB_RESTORE_MRS: 'gitlab:restoreMRs',
   GITLAB_DISMISS_RELEASE: 'gitlab:dismissRelease',
   GITLAB_RESTORE_RELEASES: 'gitlab:restoreReleases',
+  GITLAB_GET_PO_RELEASES: 'gitlab:getPOReleases',
 
   // Configuration
   CONFIG_GET: 'config:get',

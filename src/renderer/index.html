@@ -1361,6 +1361,220 @@
       font-size: 14px;
       color: var(--text-secondary);
     }
+
+    /* ═══════════════════════════════════════════
+       PRODUCT OWNER VIEW
+    ═══════════════════════════════════════════ */
+    .po-project-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      padding-left: 4px;
+    }
+
+    .po-project-icon {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      background: var(--gradient-green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px var(--accent-green-glow);
+    }
+
+    .po-project-icon svg {
+      width: 12px;
+      height: 12px;
+      fill: white;
+    }
+
+    .po-project-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: -0.2px;
+    }
+
+    .po-project-count {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-left: auto;
+    }
+
+    .po-release-item {
+      padding: 14px 16px;
+      background: var(--bg-card);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .po-release-item::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 3px;
+      height: 100%;
+      background: var(--gradient-green);
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .po-release-item:hover {
+      background: var(--bg-card-hover);
+      border-color: rgba(16, 185, 129, 0.2);
+    }
+
+    .po-release-item:hover::before {
+      opacity: 1;
+    }
+
+    .po-release-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .po-release-title {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .po-release-time {
+      font-size: 11px;
+      color: var(--text-tertiary);
+      flex-shrink: 0;
+    }
+
+    .po-env-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+      margin-bottom: 6px;
+    }
+
+    .po-release-description {
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      margin-top: 8px;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      word-break: break-word;
+    }
+
+    .po-release-description.expanded {
+      -webkit-line-clamp: unset;
+      display: block;
+    }
+
+    .po-toggle-desc {
+      font-size: 11px;
+      color: var(--accent-purple);
+      cursor: pointer;
+      margin-top: 4px;
+      display: inline-block;
+      font-weight: 500;
+      transition: color 0.15s ease;
+    }
+
+    .po-toggle-desc:hover {
+      color: var(--accent-blue);
+    }
+
+    .po-load-more {
+      display: block;
+      width: 100%;
+      padding: 10px 16px;
+      background: var(--bg-card);
+      border: 1px dashed var(--glass-border);
+      border-radius: var(--radius-md);
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .po-load-more:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--accent-purple);
+      color: var(--accent-purple);
+    }
+
+    .po-load-more:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .po-env-grid .deployment-badge .deployment-time {
+      font-size: 9px;
+      opacity: 0.75;
+      margin-left: 2px;
+    }
+
+    .po-release-description code {
+      font-family: 'SF Mono', Monaco, monospace;
+      font-size: 11px;
+      background: var(--bg-base);
+      padding: 1px 4px;
+      border-radius: 3px;
+    }
+
+    .po-release-description strong {
+      color: var(--text-primary);
+    }
+
+    .po-filter {
+      margin-bottom: 16px;
+    }
+
+    .po-filter select {
+      width: 100%;
+      padding: 10px 14px;
+      background: var(--bg-card);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      color: var(--text-primary);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      outline: none;
+      transition: all 0.2s ease;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 32px;
+    }
+
+    .po-filter select:hover {
+      border-color: rgba(139, 92, 246, 0.3);
+    }
+
+    .po-filter select:focus {
+      border-color: var(--accent-purple);
+      box-shadow: 0 0 0 3px var(--accent-purple-glow);
+    }
   </style>
 </head>
 <body>
@@ -1442,6 +1656,27 @@
       </div>
       <div id="releases-list"></div>
     </div>
+
+    <div class="tab-content" id="po-content">
+      <div class="po-filter" id="po-filter" style="display: none;">
+        <select id="po-project-filter">
+          <option value="all">All projects</option>
+        </select>
+      </div>
+      <div class="loading-state" id="po-loading">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Loading releases...</div>
+      </div>
+      <div class="empty-state" id="po-empty" style="display: none;">
+        <div class="empty-icon">
+          <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+        </div>
+        <div class="empty-title">No Releases</div>
+        <div class="empty-desc">Configure projects to follow in preferences to see their releases</div>
+        <button class="btn" id="configPOBtn">Configure projects</button>
+      </div>
+      <div id="po-list"></div>
+    </div>
   </div>
 
   <div class="footer">
@@ -1464,6 +1699,9 @@
     let lastUpdated = null;
     let isLoading = true;
     let hasAccounts = false;
+    let viewMode = 'developer';
+    let poReleasesPages = {}; // { projectId: currentPage }
+    let poFilterProject = 'all'; // 'all' or a projectPath
 
     // DOM Elements
     const tabs = document.querySelectorAll('.tab');
@@ -1471,6 +1709,9 @@
     const refreshBtn = document.getElementById('refreshBtn');
     const addAccountBtn = document.getElementById('addAccountBtn');
     const configReleasesBtn = document.getElementById('configReleasesBtn');
+    const configPOBtn = document.getElementById('configPOBtn');
+    const tabsBar = document.querySelector('.tabs');
+    const poContent = document.getElementById('po-content');
     const prefsLink = document.getElementById('prefsLink');
     const mrCount = document.getElementById('mrCount');
     const pipelineCount = document.getElementById('pipelineCount');
@@ -1503,6 +1744,7 @@
     prefsLink.addEventListener('click', openPreferences);
     addAccountBtn.addEventListener('click', openPreferences);
     configReleasesBtn.addEventListener('click', openPreferences);
+    configPOBtn.addEventListener('click', openPreferences);
 
     function openPreferences() {
       if (window.gitlabbar && window.gitlabbar.app) {
@@ -2153,11 +2395,292 @@
       }
     }
 
+    // ===== View Mode switching =====
+    function applyViewMode() {
+      if (viewMode === 'productOwner') {
+        // Hide tabs and developer tab contents, show PO content
+        tabsBar.style.display = 'none';
+        document.getElementById('mrs-content').classList.remove('active');
+        document.getElementById('pipelines-content').classList.remove('active');
+        document.getElementById('releases-content').classList.remove('active');
+        poContent.classList.add('active');
+        renderPOView();
+      } else {
+        // Show tabs and restore developer view
+        tabsBar.style.display = 'flex';
+        poContent.classList.remove('active');
+        // Restore the current tab
+        tabContents.forEach(c => c.classList.remove('active'));
+        document.getElementById(`${currentTab}-content`).classList.add('active');
+      }
+    }
+
+    // ===== Product Owner View =====
+    function renderPOView() {
+      const list = document.getElementById('po-list');
+      const empty = document.getElementById('po-empty');
+      const loading = document.getElementById('po-loading');
+      const filterContainer = document.getElementById('po-filter');
+      const filterSelect = document.getElementById('po-project-filter');
+
+      if (isLoading) {
+        loading.style.display = 'flex';
+        empty.style.display = 'none';
+        filterContainer.style.display = 'none';
+        list.innerHTML = '';
+        return;
+      }
+
+      loading.style.display = 'none';
+
+      if (releases.length === 0) {
+        empty.style.display = 'flex';
+        filterContainer.style.display = 'none';
+        list.innerHTML = '';
+        return;
+      }
+
+      empty.style.display = 'none';
+
+      // Group releases by project
+      const releasesByProject = {};
+      const projectIdByPath = {};
+      releases.forEach(release => {
+        const key = release.projectPath || release.projectName || 'Unknown';
+        if (!releasesByProject[key]) {
+          releasesByProject[key] = [];
+        }
+        releasesByProject[key].push(release);
+        if (release.projectId) {
+          projectIdByPath[key] = release.projectId;
+        }
+      });
+
+      // Build project filter
+      const projectPaths = Object.keys(releasesByProject).sort();
+      filterContainer.style.display = 'block';
+      const currentFilter = poFilterProject;
+      filterSelect.innerHTML = '<option value="all">All projects</option>' +
+        projectPaths.map(p => `<option value="${escapeHtml(p)}" ${p === currentFilter ? 'selected' : ''}>${escapeHtml(p)}</option>`).join('');
+
+      filterSelect.onchange = function() {
+        poFilterProject = filterSelect.value;
+        renderPOView();
+      };
+
+      // Filter projects if needed
+      const filteredProjects = poFilterProject === 'all'
+        ? projectPaths
+        : projectPaths.filter(p => p === poFilterProject);
+
+      const deploymentStatusTexts = {
+        success: 'Deployed',
+        running: 'Deploying...',
+        failed: 'Failed',
+        created: 'Pending',
+        canceled: 'Canceled',
+      };
+      const deploymentIcons = {
+        success: '<svg viewBox="0 0 16 16"><path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.75.75 0 1 1 1.06-1.06L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0z"/></svg>',
+        running: '<svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="20" stroke-dashoffset="10"/></svg>',
+        failed: '<svg viewBox="0 0 16 16"><path d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.75.75 0 1 1 1.06 1.06L9.06 8l3.22 3.22a.75.75 0 1 1-1.06 1.06L8 9.06l-3.22 3.22a.75.75 0 0 1-1.06-1.06L6.94 8 3.72 4.78a.75.75 0 0 1 0-1.06z"/></svg>',
+        created: '<svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="3"/></svg>',
+        canceled: '<svg viewBox="0 0 16 16"><path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zM5.5 5.5h5v5h-5v-5z"/></svg>',
+      };
+
+      let html = '';
+
+      filteredProjects.forEach(projectPath => {
+        const projectReleases = releasesByProject[projectPath];
+        const projectId = projectIdByPath[projectPath];
+
+        html += `
+          <div class="section" data-project-id="${projectId}" data-project-path="${escapeHtml(projectPath)}">
+            <div class="po-project-header">
+              <div class="po-project-icon">
+                <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+              </div>
+              <span class="po-project-name">${escapeHtml(projectPath)}</span>
+              <span class="po-project-count">${projectReleases.length} release${projectReleases.length > 1 ? 's' : ''}</span>
+            </div>
+            <div class="po-releases-container" data-project-id="${projectId}">
+              ${projectReleases.map(release => renderPORelease(release, deploymentStatusTexts, deploymentIcons)).join('')}
+            </div>
+            ${projectId ? `<button class="po-load-more" data-project-id="${projectId}">Load more releases</button>` : ''}
+          </div>
+        `;
+      });
+
+      list.innerHTML = html;
+
+      // Initialize page tracking
+      Object.values(projectIdByPath).forEach(pid => {
+        if (!poReleasesPages[pid]) {
+          poReleasesPages[pid] = 1;
+        }
+      });
+
+      // Bind click handlers for release items
+      list.querySelectorAll('.po-release-item').forEach(item => {
+        item.addEventListener('click', (e) => {
+          if (e.target.closest('.po-toggle-desc')) return;
+          const url = item.dataset.url;
+          if (url && window.gitlabbar && window.gitlabbar.app) {
+            window.gitlabbar.app.openExternal(url);
+          }
+        });
+      });
+
+      // Bind expand/collapse description
+      list.querySelectorAll('.po-toggle-desc').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const descEl = btn.previousElementSibling;
+          if (descEl && descEl.classList.contains('po-release-description')) {
+            const isExpanded = descEl.classList.toggle('expanded');
+            btn.textContent = isExpanded ? 'Show less' : 'Show more';
+          }
+        });
+      });
+
+      // Bind load more buttons
+      list.querySelectorAll('.po-load-more').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          const projectId = parseInt(btn.dataset.projectId);
+          if (!projectId) return;
+
+          btn.disabled = true;
+          btn.textContent = 'Loading...';
+
+          const nextPage = (poReleasesPages[projectId] || 1) + 1;
+          try {
+            const newReleases = await window.gitlabbar.gitlab.getPOReleases(projectId, nextPage, 5);
+            poReleasesPages[projectId] = nextPage;
+
+            if (newReleases.length > 0) {
+              const container = list.querySelector(`.po-releases-container[data-project-id="${projectId}"]`);
+              if (container) {
+                const fragment = document.createElement('div');
+                fragment.innerHTML = newReleases.map(release => renderPORelease(release, deploymentStatusTexts, deploymentIcons)).join('');
+
+                // Bind click handlers on new items
+                fragment.querySelectorAll('.po-release-item').forEach(item => {
+                  item.addEventListener('click', (ev) => {
+                    if (ev.target.closest('.po-toggle-desc')) return;
+                    const url = item.dataset.url;
+                    if (url && window.gitlabbar && window.gitlabbar.app) {
+                      window.gitlabbar.app.openExternal(url);
+                    }
+                  });
+                });
+                fragment.querySelectorAll('.po-toggle-desc').forEach(tb => {
+                  tb.addEventListener('click', (ev) => {
+                    ev.stopPropagation();
+                    const descEl = tb.previousElementSibling;
+                    if (descEl && descEl.classList.contains('po-release-description')) {
+                      const isExpanded = descEl.classList.toggle('expanded');
+                      tb.textContent = isExpanded ? 'Show less' : 'Show more';
+                    }
+                  });
+                });
+
+                while (fragment.firstChild) {
+                  container.appendChild(fragment.firstChild);
+                }
+
+                // Update count
+                const section = btn.closest('.section');
+                const countEl = section.querySelector('.po-project-count');
+                if (countEl) {
+                  const total = container.querySelectorAll('.po-release-item').length;
+                  countEl.textContent = `${total} release${total > 1 ? 's' : ''}`;
+                }
+              }
+            }
+
+            if (newReleases.length < 5) {
+              btn.style.display = 'none';
+            } else {
+              btn.disabled = false;
+              btn.textContent = 'Load more releases';
+            }
+          } catch (err) {
+            console.error('Error loading more releases:', err);
+            btn.disabled = false;
+            btn.textContent = 'Load more releases';
+          }
+        });
+      });
+    }
+
+    function renderPORelease(release, deploymentStatusTexts, deploymentIcons) {
+      const deployments = release.deployments || [];
+
+      let envHtml = '';
+      if (deployments.length === 0) {
+        envHtml = '<span class="deployment-badge none"><svg viewBox="0 0 16 16"><path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zM0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8z"/></svg> Not deployed</span>';
+      } else {
+        envHtml = deployments.map(dep => {
+          const depTime = dep.deployedAt ? `<span class="deployment-time">${formatDateTime(dep.deployedAt)}</span>` : '';
+          return `<span class="deployment-badge ${dep.status}" title="${dep.deployedAt ? formatDateTime(dep.deployedAt) : ''}">
+            ${deploymentIcons[dep.status] || ''}
+            ${escapeHtml(dep.environment)}
+            ${depTime}
+          </span>`;
+        }).join('');
+      }
+
+      const hasDescription = release.description && release.description.trim().length > 0;
+      const descriptionHtml = hasDescription
+        ? `<div class="po-release-description">${simpleMarkdown(release.description)}</div>
+           <span class="po-toggle-desc">Show more</span>`
+        : '';
+
+      const releaseDate = formatDateTime(release.releasedAt || release.createdAt);
+
+      return `
+        <div class="po-release-item" data-url="${release.webUrl}">
+          <div class="po-release-header">
+            <span class="release-tag">${escapeHtml(release.tagName)}</span>
+            <span class="po-release-title">${escapeHtml(release.name || release.tagName)}</span>
+            <span class="po-release-time">${releaseDate}</span>
+          </div>
+          <div class="po-env-grid">
+            ${envHtml}
+          </div>
+          ${descriptionHtml}
+        </div>
+      `;
+    }
+
     // Utilities
     function escapeHtml(text) {
       const div = document.createElement('div');
       div.textContent = text || '';
       return div.innerHTML;
+    }
+
+    function simpleMarkdown(text) {
+      if (!text) return '';
+      let html = escapeHtml(text);
+      // Headers: ### h3, ## h2, # h1
+      html = html.replace(/^### (.+)$/gm, '<strong style="font-size:12px;">$1</strong>');
+      html = html.replace(/^## (.+)$/gm, '<strong style="font-size:13px;">$1</strong>');
+      html = html.replace(/^# (.+)$/gm, '<strong style="font-size:14px;">$1</strong>');
+      // Bold: **text**
+      html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+      // Italic: *text*
+      html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+      // Inline code: `code`
+      html = html.replace(/`([^`]+)`/g, '<code style="font-family:\'SF Mono\',Monaco,monospace;font-size:11px;background:var(--bg-base);padding:1px 4px;border-radius:3px;">$1</code>');
+      // Links: [text](url)
+      html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" style="color:var(--accent-purple);text-decoration:none;" onclick="event.stopPropagation();window.gitlabbar.app.openExternal(\'$2\');return false;">$1</a>');
+      // List items: - item
+      html = html.replace(/^[-*] (.+)$/gm, '&bull; $1');
+      // Line breaks
+      html = html.replace(/\n/g, '<br>');
+      return html;
     }
 
     function formatDateTime(dateString) {
@@ -2237,10 +2760,13 @@
         isLoading = false;
         // Check accounts in case they were added/removed
         await checkAccounts();
+        // Reload viewMode in case it changed from preferences
+        await loadViewMode();
         updateStatus(data.error ? 'error' : 'connected');
         renderMRs();
         renderPipelines();
         renderReleases();
+        applyViewMode();
       });
     }
 
@@ -2257,6 +2783,18 @@
       }
     }
 
+    // Load viewMode from config
+    async function loadViewMode() {
+      try {
+        if (window.gitlabbar && window.gitlabbar.config) {
+          const vm = await window.gitlabbar.config.get('viewMode');
+          viewMode = vm || 'developer';
+        }
+      } catch (err) {
+        console.error('Error loading viewMode:', err);
+      }
+    }
+
     // Initial render (shows loading state)
     renderMRs();
     renderPipelines();
@@ -2268,9 +2806,11 @@
       await Promise.all([
         loadDismissedPipelines(),
         loadDismissedMRs(),
-        loadDismissedReleases()
+        loadDismissedReleases(),
+        loadViewMode()
       ]);
       await loadData();
+      applyViewMode();
     }
     setTimeout(init, 100);
   </script>

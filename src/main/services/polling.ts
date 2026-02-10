@@ -172,9 +172,11 @@ class PollingService {
 
           // Fetch releases from watched projects
           const watchedProjectIdsForReleases = config.getWatchedProjectIds();
+          const viewMode = config.get('viewMode') || 'developer';
+          const releasesLimit = viewMode === 'productOwner' ? 5 : 3;
           if (watchedProjectIdsForReleases.length > 0) {
             const releasesPromises = watchedProjectIdsForReleases.map(projectId =>
-              client.getReleasesWithDeployments(projectId, 3).catch(() => [])
+              client.getReleasesWithDeployments(projectId, releasesLimit).catch(() => [])
             );
             const releasesResults = await Promise.all(releasesPromises);
             allReleases.push(...releasesResults.flat());

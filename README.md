@@ -61,6 +61,22 @@ Track releases from your watched projects:
 - Deployment status (if configured)
 - Environment information
 
+### Product Owner Mode
+
+A dedicated view for Product Owners and Project Managers, focused on releases and deployments rather than MRs and pipelines.
+
+Enable it in **Preferences → General → View mode → Product Owner**.
+
+This mode replaces the 3-tab layout with a single release-focused view:
+
+- **Releases grouped by project** with deployment status per environment (dev, staging, production...)
+- **Project filter** at the top to focus on a specific project
+- **Full date/time** for releases and deployments
+- **Markdown rendering** in release descriptions (bold, italic, code, links, lists)
+- **Expandable descriptions** with Show more / Show less
+- **Load more** button to paginate through older releases
+- **Tray icon** continues to work normally (MRs and pipelines are still fetched in the background)
+
 ### Dismiss & Restore
 
 You can **dismiss** any item (MR, pipeline, or release) to hide it temporarily:
@@ -106,6 +122,7 @@ All notification types can be individually enabled/disabled.
 
 ### General Settings
 
+- **View mode**: Switch between Developer (classic 3-tab view) and Product Owner (release-focused view)
 - **Refresh interval**: 30 seconds to 10 minutes
 - **Failed pipeline age limit**: Only show failures from the last X hours
 - **Launch at startup**: Start GitLabBar when you log in

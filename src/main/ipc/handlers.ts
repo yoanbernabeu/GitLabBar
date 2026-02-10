@@ -179,6 +179,25 @@ export function setupIpcHandlers(): void {
     return { success: true };
   });
 
+  ipcMain.handle(IPC_CHANNELS.GITLAB_GET_PO_RELEASES, async (_, projectId: number, page: number, perPage: number) => {
+    const activeAccounts = accounts.getActive();
+    if (activeAccounts.length === 0) return [];
+
+    for (const account of activeAccounts) {
+      const token = accounts.getToken(account.id);
+      if (!token) continue;
+
+      const client = getGitLabClient(account.id, account.instanceUrl, token);
+      try {
+        const releases = await client.getReleasesWithDeployments(projectId, perPage, page);
+        if (releases.length > 0) return releases;
+      } catch (error) {
+        console.error(`Failed to fetch PO releases for project ${projectId}:`, error);
+      }
+    }
+    return [];
+  });
+
   ipcMain.handle(IPC_CHANNELS.GITLAB_SEARCH_PROJECTS, async (_, query: string) => {
     // Search on all active accounts
     const activeAccounts = accounts.getActive();
@@ -226,7 +245,7 @@ export function setupIpcHandlers(): void {
     config.set(key, value as AppConfig[keyof AppConfig]);
 
     // Special actions based on the key
-    if (key === 'refreshInterval') {
+    if (key === 'refreshInterval' || key === 'viewMode') {
       pollingService.restart();
     } else if (key === 'launchAtStartup') {
       setAutoLaunch(value as boolean);

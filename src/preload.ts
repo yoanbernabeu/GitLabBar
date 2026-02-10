@@ -18,6 +18,7 @@ const IPC_CHANNELS = {
   GITLAB_RESTORE_MRS: 'gitlab:restoreMRs',
   GITLAB_DISMISS_RELEASE: 'gitlab:dismissRelease',
   GITLAB_RESTORE_RELEASES: 'gitlab:restoreReleases',
+  GITLAB_GET_PO_RELEASES: 'gitlab:getPOReleases',
   CONFIG_GET: 'config:get',
   CONFIG_SET: 'config:set',
   CONFIG_GET_ALL: 'config:getAll',
@@ -52,6 +53,7 @@ const api = {
     restoreMRs: () => ipcRenderer.invoke(IPC_CHANNELS.GITLAB_RESTORE_MRS),
     dismissRelease: (releaseId: number) => ipcRenderer.invoke(IPC_CHANNELS.GITLAB_DISMISS_RELEASE, releaseId),
     restoreReleases: () => ipcRenderer.invoke(IPC_CHANNELS.GITLAB_RESTORE_RELEASES),
+    getPOReleases: (projectId: number, page: number, perPage: number) => ipcRenderer.invoke(IPC_CHANNELS.GITLAB_GET_PO_RELEASES, projectId, page, perPage),
   },
 
   config: {

@@ -888,6 +888,17 @@
         </div>
       </div>
 
+      <div class="section-title">View mode</div>
+
+      <div class="form-group">
+        <label class="form-label">Interface mode</label>
+        <select class="form-input" id="viewMode">
+          <option value="developer" selected>Developer</option>
+          <option value="productOwner">Product Owner</option>
+        </select>
+        <div class="form-hint">Developer: classic view with MRs, Pipelines and Releases. Product Owner: release-focused view grouped by project with deployment status.</div>
+      </div>
+
       <div class="section-title">Refresh</div>
 
       <div class="form-group">
@@ -985,6 +996,7 @@
     const addAccountBtn = document.getElementById('addAccountBtn');
     const launchAtStartup = document.getElementById('launchAtStartup');
     const refreshInterval = document.getElementById('refreshInterval');
+    const viewMode = document.getElementById('viewMode');
     const failedPipelineMaxAge = document.getElementById('failedPipelineMaxAge');
     const showUnassignedMRs = document.getElementById('showUnassignedMRs');
     const projectSearch = document.getElementById('projectSearch');
@@ -1095,6 +1107,7 @@
           const config = await window.gitlabbar.config.getAll();
           if (config) {
             launchAtStartup.checked = config.launchAtStartup || false;
+            viewMode.value = config.viewMode || 'developer';
             refreshInterval.value = config.refreshInterval || 60000;
             failedPipelineMaxAge.value = config.failedPipelineMaxAge || 24;
             showUnassignedMRs.checked = config.showUnassignedMRs || false;
@@ -1109,6 +1122,12 @@
     launchAtStartup.addEventListener('change', async () => {
       if (window.gitlabbar && window.gitlabbar.config) {
         await window.gitlabbar.config.set('launchAtStartup', launchAtStartup.checked);
+      }
+    });
+
+    viewMode.addEventListener('change', async () => {
+      if (window.gitlabbar && window.gitlabbar.config) {
+        await window.gitlabbar.config.set('viewMode', viewMode.value);
       }
     });
 

@@ -25,6 +25,7 @@ export interface AppConfig {
   dismissedPipelines: number[]; // IDs of hidden pipelines
   dismissedMRs: number[]; // IDs of hidden MRs
   dismissedReleases: number[]; // IDs of hidden releases
+  viewMode: 'developer' | 'productOwner';
 }
 
 export const DEFAULT_CONFIG: AppConfig = {
@@ -46,4 +47,5 @@ export const DEFAULT_CONFIG: AppConfig = {
   dismissedPipelines: [],
   dismissedMRs: [],
   dismissedReleases: [],
+  viewMode: 'developer',
 };
