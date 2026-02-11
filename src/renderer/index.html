@@ -241,6 +241,7 @@
 
     .tab {
       flex: 1;
+      min-width: 0;
       padding: 10px 16px;
       background: var(--bg-card);
       border: 1px solid var(--glass-border);
@@ -303,6 +304,45 @@
 
     .tab.active .tab-badge {
       background: rgba(255, 255, 255, 0.25);
+    }
+
+    /* ═══════════════════════════════════════════
+       PROFILE NAV (Developer / Product Owner)
+    ═══════════════════════════════════════════ */
+    .profile-nav {
+      display: flex;
+      padding: 8px 20px 12px;
+      gap: 6px;
+      background: var(--bg-elevated);
+      border-bottom: 1px solid var(--glass-border);
+      flex-shrink: 0;
+    }
+
+    .profile-nav-item {
+      flex: 1;
+      min-width: 0;
+      padding: 8px 14px;
+      background: var(--bg-card);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .profile-nav-item:hover {
+      background: var(--bg-card-hover);
+      color: var(--text-primary);
+      border-color: rgba(139, 92, 246, 0.3);
+    }
+
+    .profile-nav-item.active {
+      background: transparent;
+      border-color: var(--accent-purple);
+      color: var(--accent-purple);
+      box-shadow: 0 0 0 1px var(--accent-purple), 0 0 16px var(--accent-purple-glow);
     }
 
     /* ═══════════════════════════════════════════
@@ -1594,6 +1634,11 @@
     </button>
   </div>
 
+  <div class="profile-nav" id="profileNav">
+    <button type="button" class="profile-nav-item active" data-profile="developer" id="profileDeveloper">Developer</button>
+    <button type="button" class="profile-nav-item" data-profile="productOwner" id="profileProductOwner">Product Owner</button>
+  </div>
+
   <div class="tabs">
     <button class="tab active" data-tab="mrs">
       <span>MRs</span>
@@ -1671,8 +1716,8 @@
         <div class="empty-icon">
           <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
         </div>
-        <div class="empty-title">No Releases</div>
-        <div class="empty-desc">Configure projects to follow in preferences to see their releases</div>
+        <div class="empty-title" id="po-empty-title">No Releases</div>
+        <div class="empty-desc" id="po-empty-desc">Configure projects to follow in preferences to see their releases</div>
         <button class="btn" id="configPOBtn">Configure projects</button>
       </div>
       <div id="po-list"></div>
@@ -1700,6 +1745,7 @@
     let isLoading = true;
     let hasAccounts = false;
     let viewMode = 'developer';
+    let hasWatchedProjects = false;
     let poReleasesPages = {}; // { projectId: currentPage }
     let poFilterProject = 'all'; // 'all' or a projectPath
 
@@ -1711,6 +1757,7 @@
     const configReleasesBtn = document.getElementById('configReleasesBtn');
     const configPOBtn = document.getElementById('configPOBtn');
     const tabsBar = document.querySelector('.tabs');
+    const profileNavItems = document.querySelectorAll('.profile-nav-item');
     const poContent = document.getElementById('po-content');
     const prefsLink = document.getElementById('prefsLink');
     const mrCount = document.getElementById('mrCount');
@@ -1729,6 +1776,36 @@
         tabContents.forEach(c => c.classList.remove('active'));
         document.getElementById(`${tabName}-content`).classList.add('active');
         currentTab = tabName;
+      });
+    });
+
+    // Profile nav (Developer / Product Owner)
+    function updateProfileNavUI() {
+      profileNavItems.forEach(el => {
+        const isActive = (el.dataset.profile === 'developer' && viewMode === 'developer') ||
+          (el.dataset.profile === 'productOwner' && viewMode === 'productOwner');
+        el.classList.toggle('active', isActive);
+      });
+    }
+
+    async function setViewMode(mode) {
+      if (viewMode === mode) return;
+      viewMode = mode;
+      try {
+        if (window.gitlabbar && window.gitlabbar.config) {
+          await window.gitlabbar.config.set('viewMode', mode);
+        }
+      } catch (err) {
+        console.error('Error saving viewMode:', err);
+      }
+      updateProfileNavUI();
+      applyViewMode();
+    }
+
+    profileNavItems.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const profile = btn.dataset.profile;
+        if (profile) setViewMode(profile);
       });
     });
 
@@ -2437,6 +2514,18 @@
         empty.style.display = 'flex';
         filterContainer.style.display = 'none';
         list.innerHTML = '';
+        const emptyTitle = document.getElementById('po-empty-title');
+        const emptyDesc = document.getElementById('po-empty-desc');
+        const configBtn = document.getElementById('configPOBtn');
+        if (hasWatchedProjects) {
+          emptyTitle.textContent = 'No releases yet';
+          emptyDesc.textContent = 'Your followed projects don\'t have any releases yet, or none have been fetched.';
+          configBtn.textContent = 'Manage projects';
+        } else {
+          emptyTitle.textContent = 'No projects configured';
+          emptyDesc.textContent = 'Add projects in Preferences → Projects to see their releases here.';
+          configBtn.textContent = 'Configure projects';
+        }
         return;
       }
 
@@ -2760,8 +2849,9 @@
         isLoading = false;
         // Check accounts in case they were added/removed
         await checkAccounts();
-        // Reload viewMode in case it changed from preferences
+        // Reload viewMode and watched projects in case they changed from preferences
         await loadViewMode();
+        await loadWatchedProjects();
         updateStatus(data.error ? 'error' : 'connected');
         renderMRs();
         renderPipelines();
@@ -2793,6 +2883,20 @@
       } catch (err) {
         console.error('Error loading viewMode:', err);
       }
+      updateProfileNavUI();
+    }
+
+    // Load whether user has configured watched projects (for PO empty state message)
+    async function loadWatchedProjects() {
+      try {
+        if (window.gitlabbar && window.gitlabbar.config) {
+          const ids = await window.gitlabbar.config.get('watchedProjectIds');
+          hasWatchedProjects = Array.isArray(ids) && ids.length > 0;
+        }
+      } catch (err) {
+        console.error('Error loading watched projects:', err);
+        hasWatchedProjects = false;
+      }
     }
 
     // Initial render (shows loading state)
@@ -2807,7 +2911,8 @@
         loadDismissedPipelines(),
         loadDismissedMRs(),
         loadDismissedReleases(),
-        loadViewMode()
+        loadViewMode(),
+        loadWatchedProjects()
       ]);
       await loadData();
       applyViewMode();
