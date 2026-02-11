@@ -1757,6 +1757,7 @@
     const configReleasesBtn = document.getElementById('configReleasesBtn');
     const configPOBtn = document.getElementById('configPOBtn');
     const tabsBar = document.querySelector('.tabs');
+    const profileNav = document.getElementById('profileNav');
     const profileNavItems = document.querySelectorAll('.profile-nav-item');
     const poContent = document.getElementById('po-content');
     const prefsLink = document.getElementById('prefsLink');
@@ -1785,6 +1786,7 @@
         const isActive = (el.dataset.profile === 'developer' && viewMode === 'developer') ||
           (el.dataset.profile === 'productOwner' && viewMode === 'productOwner');
         el.classList.toggle('active', isActive);
+        el.setAttribute('aria-pressed', isActive);
       });
     }
 
@@ -1799,6 +1801,7 @@
         console.error('Error saving viewMode:', err);
       }
       updateProfileNavUI();
+      await loadWatchedProjects();
       applyViewMode();
     }
 
@@ -2474,6 +2477,9 @@
 
     // ===== View Mode switching =====
     function applyViewMode() {
+      // Hide profile nav when no account is configured
+      profileNav.style.display = hasAccounts ? 'flex' : 'none';
+
       if (viewMode === 'productOwner') {
         // Hide tabs and developer tab contents, show PO content
         tabsBar.style.display = 'none';
@@ -2484,7 +2490,7 @@
         renderPOView();
       } else {
         // Show tabs and restore developer view
-        tabsBar.style.display = 'flex';
+        tabsBar.style.display = hasAccounts ? 'flex' : 'none';
         poContent.classList.remove('active');
         // Restore the current tab
         tabContents.forEach(c => c.classList.remove('active'));
