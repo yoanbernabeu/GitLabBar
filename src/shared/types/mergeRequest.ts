@@ -29,6 +29,8 @@ export interface MergeRequest {
   hasConflicts: boolean;
   reviewers: MergeRequestAuthor[];
   assignees: MergeRequestAuthor[];
+  userNotesCount: number;
+  userMentionedInNotes: boolean;
 }
 
 export interface GitLabMergeRequestResponse {
@@ -49,4 +51,5 @@ export interface GitLabMergeRequestResponse {
   has_conflicts: boolean;
   reviewers: MergeRequestAuthor[];
   assignees: MergeRequestAuthor[];
+  user_notes_count: number;
 }

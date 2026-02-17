@@ -9,6 +9,19 @@ import { GitLabClient, getGitLabClient } from '../api/gitlab';
 import { setAutoLaunch, getAutoLaunchStatus } from '../services/autolaunch';
 import { GitLabAccount, GitLabAccountInput, AppConfig } from '../../shared/types';
 
+async function resolveUserIds(client: GitLabClient, ids: number[]): Promise<number[]> {
+  const resolved: number[] = [];
+  for (const id of ids) {
+    if (id === 0) {
+      const user = await client.getCurrentUser();
+      if (user) resolved.push(user.id);
+    } else {
+      resolved.push(id);
+    }
+  }
+  return resolved;
+}
+
 export function setupIpcHandlers(): void {
   // ===== Accounts =====
 
@@ -141,6 +154,84 @@ export function setupIpcHandlers(): void {
     // Recalculate and update tray icon
     pollingService.recalculateStatus();
     return { success: true };
+  });
+
+  ipcMain.handle(IPC_CHANNELS.GITLAB_GET_MR_NOTES, async (_, projectId: number, mrIid: number) => {
+    const activeAccounts = accounts.getActive();
+    for (const account of activeAccounts) {
+      const token = accounts.getToken(account.id);
+      if (!token) continue;
+      const client = getGitLabClient(account.id, account.instanceUrl, token);
+      try {
+        const notes = await client.getMRNotes(projectId, mrIid, 20);
+        // Filter out system notes, return only human comments
+        return notes
+          .filter((n: any) => !n.system)
+          .map((n: any) => ({
+            id: n.id,
+            body: n.body,
+            author: {
+              name: n.author?.name || 'Unknown',
+              username: n.author?.username || '',
+              avatar_url: n.author?.avatar_url || '',
+            },
+            createdAt: n.created_at,
+          }));
+      } catch (error) {
+        console.error(`Failed to get MR notes:`, error);
+      }
+    }
+    return [];
+  });
+
+  ipcMain.handle(IPC_CHANNELS.GITLAB_GET_PROJECT_MEMBERS, async (_, projectId: number) => {
+    const activeAccounts = accounts.getActive();
+    for (const account of activeAccounts) {
+      const token = accounts.getToken(account.id);
+      if (!token) continue;
+      const client = getGitLabClient(account.id, account.instanceUrl, token);
+      try {
+        const members = await client.getProjectMembers(projectId);
+        if (members.length > 0) return members;
+      } catch (error) {
+        console.error(`Failed to get project members:`, error);
+      }
+    }
+    return [];
+  });
+
+  ipcMain.handle(IPC_CHANNELS.GITLAB_ASSIGN_MR, async (_, projectId: number, mrIid: number, assigneeIds: number[]) => {
+    const activeAccounts = accounts.getActive();
+    for (const account of activeAccounts) {
+      const token = accounts.getToken(account.id);
+      if (!token) continue;
+      const client = getGitLabClient(account.id, account.instanceUrl, token);
+      // Resolve "me" (id=0) to current user ID
+      const resolvedIds = await resolveUserIds(client, assigneeIds);
+      const success = await client.assignMergeRequest(projectId, mrIid, resolvedIds);
+      if (success) {
+        pollingService.refresh();
+        return { success: true };
+      }
+    }
+    return { success: false, error: 'Failed to assign MR' };
+  });
+
+  ipcMain.handle(IPC_CHANNELS.GITLAB_ADD_REVIEWER, async (_, projectId: number, mrIid: number, reviewerIds: number[]) => {
+    const activeAccounts = accounts.getActive();
+    for (const account of activeAccounts) {
+      const token = accounts.getToken(account.id);
+      if (!token) continue;
+      const client = getGitLabClient(account.id, account.instanceUrl, token);
+      // Resolve "me" (id=0) to current user ID
+      const resolvedIds = await resolveUserIds(client, reviewerIds);
+      const success = await client.addReviewerToMergeRequest(projectId, mrIid, resolvedIds);
+      if (success) {
+        pollingService.refresh();
+        return { success: true };
+      }
+    }
+    return { success: false, error: 'Failed to add reviewer' };
   });
 
   ipcMain.handle(IPC_CHANNELS.GITLAB_DISMISS_MR, (_, mrId: number) => {

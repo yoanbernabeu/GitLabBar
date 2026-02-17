@@ -220,7 +220,76 @@ export class GitLabClient {
       hasConflicts: mr.has_conflicts,
       reviewers: mr.reviewers || [],
       assignees: mr.assignees || [],
+      userNotesCount: mr.user_notes_count || 0,
+      userMentionedInNotes: false,
     };
+  }
+
+  async getProjectMembers(projectId: number): Promise<{ id: number; username: string; name: string; avatar_url: string }[]> {
+    try {
+      const response = await this.client.get(`/projects/${projectId}/members/all`, {
+        params: { per_page: 100 },
+      });
+      return response.data.map((m: any) => ({
+        id: m.id,
+        username: m.username,
+        name: m.name,
+        avatar_url: m.avatar_url,
+      }));
+    } catch (error) {
+      console.error(`Failed to fetch members for project ${projectId}:`, error);
+      return [];
+    }
+  }
+
+  async assignMergeRequest(projectId: number, mrIid: number, assigneeIds: number[]): Promise<boolean> {
+    try {
+      await this.client.put(`/projects/${projectId}/merge_requests/${mrIid}`, {
+        assignee_ids: assigneeIds,
+      });
+      return true;
+    } catch (error) {
+      console.error(`Failed to assign MR !${mrIid}:`, error);
+      return false;
+    }
+  }
+
+  async addReviewerToMergeRequest(projectId: number, mrIid: number, reviewerIds: number[]): Promise<boolean> {
+    try {
+      await this.client.put(`/projects/${projectId}/merge_requests/${mrIid}`, {
+        reviewer_ids: reviewerIds,
+      });
+      return true;
+    } catch (error) {
+      console.error(`Failed to add reviewer to MR !${mrIid}:`, error);
+      return false;
+    }
+  }
+
+  async getMRNotes(projectId: number, mrIid: number, perPage: number = 20): Promise<any[]> {
+    try {
+      const response = await this.client.get(
+        `/projects/${projectId}/merge_requests/${mrIid}/notes`,
+        { params: { per_page: perPage, sort: 'desc', order_by: 'created_at' } }
+      );
+      return response.data;
+    } catch (error) {
+      console.error(`Failed to fetch notes for MR !${mrIid}:`, error);
+      return [];
+    }
+  }
+
+  async checkUserMentionedInMR(projectId: number, mrIid: number, username: string): Promise<boolean> {
+    const notes = await this.getMRNotes(projectId, mrIid, 20);
+    // Only check non-system notes (real comments, not automatic activity)
+    const humanNotes = notes.filter((n: any) => !n.system);
+    if (humanNotes.length === 0) return false;
+    const mentionPattern = `@${username}`;
+    return humanNotes.some((n: any) => n.body && n.body.includes(mentionPattern));
+  }
+
+  getCurrentUserId(): number | null {
+    return this.currentUserId;
   }
 
   async getProject(projectId: number): Promise<GitLabProject | null> {

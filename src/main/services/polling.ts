@@ -100,6 +100,26 @@ class PollingService {
             }
           }
 
+          // Enrich MRs with mention detection (only for MRs with comments)
+          const user = await client.getCurrentUser();
+          if (user) {
+            const mrsWithNotes = mrs.filter(mr => mr.userNotesCount > 0);
+            // Process in parallel but limit concurrency to avoid rate limiting
+            const batchSize = 5;
+            for (let i = 0; i < mrsWithNotes.length; i += batchSize) {
+              const batch = mrsWithNotes.slice(i, i + batchSize);
+              await Promise.all(batch.map(async (mr) => {
+                try {
+                  mr.userMentionedInNotes = await client.checkUserMentionedInMR(
+                    mr.projectId, mr.iid, user.username
+                  );
+                } catch {
+                  // Silently fail - mention detection is best-effort
+                }
+              }));
+            }
+          }
+
           allMergeRequests.push(...mrs);
 
           // Fetch MRs without reviewer if the option is enabled

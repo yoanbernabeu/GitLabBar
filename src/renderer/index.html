@@ -1320,6 +1320,381 @@
       border: 1px solid rgba(239, 68, 68, 0.3);
     }
 
+    /* ═══════════════════════════════════════════
+       MR AGE INDICATORS
+    ═══════════════════════════════════════════ */
+    .item.mr-age-fresh::before {
+      background: linear-gradient(180deg, #10B981, #059669);
+      opacity: 1;
+    }
+    .item.mr-age-warning::before {
+      background: linear-gradient(180deg, #F59E0B, #D97706);
+      opacity: 1;
+    }
+    .item.mr-age-alert::before {
+      background: linear-gradient(180deg, #F97316, #EA580C);
+      opacity: 1;
+    }
+    .item.mr-age-danger::before {
+      background: linear-gradient(180deg, #EF4444, #DC2626);
+      opacity: 1;
+    }
+    .item.mr-age-critical::before {
+      background: linear-gradient(180deg, #EF4444, #B91C1C);
+      opacity: 1;
+      animation: agePulse 2s ease-in-out infinite;
+    }
+
+    @keyframes agePulse {
+      0%, 100% { opacity: 1; box-shadow: none; }
+      50% { opacity: 0.6; box-shadow: -2px 0 8px rgba(239, 68, 68, 0.4); }
+    }
+
+    .item-time-badge {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 6px;
+      flex-shrink: 0;
+    }
+    .item-time-badge.fresh {
+      background: rgba(16, 185, 129, 0.15);
+      color: #10B981;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    .item-time-badge.warning {
+      background: rgba(245, 158, 11, 0.15);
+      color: #F59E0B;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+    .item-time-badge.alert {
+      background: rgba(249, 115, 22, 0.15);
+      color: #F97316;
+      border: 1px solid rgba(249, 115, 22, 0.3);
+    }
+    .item-time-badge.danger {
+      background: rgba(239, 68, 68, 0.15);
+      color: #EF4444;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+    .item-time-badge.critical {
+      background: rgba(239, 68, 68, 0.2);
+      color: #F87171;
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      animation: badgePulse 2s ease-in-out infinite;
+    }
+
+    @keyframes badgePulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+
+    /* ═══════════════════════════════════════════
+       MR NOTES/COMMENTS BADGE
+    ═══════════════════════════════════════════ */
+    .notes-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 10px;
+      flex-shrink: 0;
+      background: rgba(139, 92, 246, 0.12);
+      color: var(--accent-purple);
+      border: 1px solid rgba(139, 92, 246, 0.25);
+    }
+    .notes-badge.mentioned {
+      background: rgba(245, 158, 11, 0.2);
+      color: #F59E0B;
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      animation: mentionPulse 2s ease-in-out infinite;
+    }
+    @keyframes mentionPulse {
+      0%, 100% { box-shadow: none; }
+      50% { box-shadow: 0 0 8px rgba(245, 158, 11, 0.3); }
+    }
+    .notes-badge svg {
+      width: 11px;
+      height: 11px;
+      fill: currentColor;
+    }
+    .notes-badge.clickable {
+      cursor: pointer;
+    }
+    .notes-badge.clickable:hover {
+      filter: brightness(1.2);
+    }
+
+    /* ═══════════════════════════════════════════
+       NOTES PANEL (comment viewer)
+    ═══════════════════════════════════════════ */
+    .notes-panel {
+      position: fixed;
+      min-width: 300px;
+      max-width: 360px;
+      max-height: 280px;
+      overflow-y: auto;
+      background: var(--bg-elevated);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+      z-index: 9999;
+      padding: 8px;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+    .notes-panel::-webkit-scrollbar {
+      width: 6px;
+    }
+    .notes-panel::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .notes-panel::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 3px;
+    }
+    .notes-panel::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+    .notes-panel-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 6px 8px;
+      border-bottom: 1px solid var(--glass-border);
+      margin-bottom: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .notes-panel-header svg {
+      width: 13px;
+      height: 13px;
+      fill: var(--accent-purple);
+    }
+    .notes-panel-close {
+      margin-left: auto;
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      background: transparent;
+      border: none;
+      color: var(--text-tertiary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+    }
+    .notes-panel-close:hover {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--accent-red);
+    }
+    .notes-panel-close svg {
+      width: 12px;
+      height: 12px;
+      fill: currentColor;
+    }
+    .note-item {
+      padding: 8px;
+      border-radius: var(--radius-sm);
+      margin-bottom: 4px;
+      background: var(--bg-card);
+      border: 1px solid var(--glass-border);
+    }
+    .note-item:last-child {
+      margin-bottom: 0;
+    }
+    .note-author {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+    .note-author img {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    .note-author-placeholder {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--gradient-blue);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      font-weight: 600;
+      color: white;
+      flex-shrink: 0;
+    }
+    .note-author-name {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+    .note-author-time {
+      font-size: 9px;
+      color: var(--text-tertiary);
+      margin-left: auto;
+    }
+    .note-body {
+      font-size: 12px;
+      line-height: 1.5;
+      color: var(--text-secondary);
+      word-break: break-word;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
+    }
+    .note-body code {
+      font-family: 'SF Mono', Monaco, monospace;
+      font-size: 10px;
+      background: var(--bg-base);
+      padding: 1px 4px;
+      border-radius: 3px;
+    }
+    .notes-panel-loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      color: var(--text-tertiary);
+      font-size: 11px;
+    }
+    .notes-panel-empty {
+      text-align: center;
+      padding: 16px;
+      color: var(--text-tertiary);
+      font-size: 11px;
+    }
+
+    /* ═══════════════════════════════════════════
+       MR ACTION BUTTONS (Assign / Add Reviewer)
+    ═══════════════════════════════════════════ */
+    .mr-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .mr-action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+      font-weight: 500;
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px dashed var(--glass-border);
+      background: transparent;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      position: relative;
+    }
+    .mr-action-btn:hover {
+      background: rgba(139, 92, 246, 0.1);
+      border-color: var(--accent-purple);
+      color: var(--accent-purple);
+      border-style: solid;
+    }
+    .mr-action-btn svg {
+      width: 12px;
+      height: 12px;
+      fill: currentColor;
+    }
+
+    /* Dropdown for member selection */
+    .mr-dropdown {
+      position: fixed;
+      min-width: 240px;
+      max-height: 220px;
+      overflow-y: auto;
+      background: var(--bg-elevated);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+      z-index: 9999;
+      padding: 4px;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+    .mr-dropdown::-webkit-scrollbar {
+      width: 6px;
+    }
+    .mr-dropdown::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .mr-dropdown::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 3px;
+    }
+    .mr-dropdown::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+    .mr-dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: background 0.1s ease;
+      border: none;
+      background: transparent;
+      width: 100%;
+      text-align: left;
+      color: var(--text-primary);
+      font-size: 12px;
+    }
+    .mr-dropdown-item:hover {
+      background: var(--bg-card-hover);
+    }
+    .mr-dropdown-item.me-item {
+      border-bottom: 1px solid var(--glass-border);
+      margin-bottom: 2px;
+      padding-bottom: 10px;
+      font-weight: 600;
+      color: var(--accent-purple);
+    }
+    .mr-dropdown-item img {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    .mr-dropdown-item .member-info {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+    .mr-dropdown-item .member-name {
+      font-size: 11px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .mr-dropdown-item .member-username {
+      font-size: 9px;
+      color: var(--text-tertiary);
+    }
+    .mr-dropdown-loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      color: var(--text-tertiary);
+      font-size: 11px;
+    }
+
     .pipeline-trigger {
       display: flex;
       align-items: center;
@@ -1936,10 +2311,10 @@
 
       list.innerHTML = html;
 
-      // Add click handlers for MR items (but not dismiss button)
+      // Add click handlers for MR items (but not dismiss button or action buttons)
       list.querySelectorAll('.mr-item').forEach(item => {
         item.addEventListener('click', (e) => {
-          if (e.target.closest('.item-dismiss')) return;
+          if (e.target.closest('.item-dismiss') || e.target.closest('.mr-action-btn') || e.target.closest('.mr-dropdown') || e.target.closest('.notes-badge') || e.target.closest('.notes-panel')) return;
           const url = item.dataset.url;
           if (url && window.gitlabbar && window.gitlabbar.app) {
             window.gitlabbar.app.openExternal(url);
@@ -1960,6 +2335,209 @@
           }
         });
       });
+
+      // Action buttons: Assign / Add Reviewer
+      list.querySelectorAll('.mr-action-btn').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          e.preventDefault();
+
+          // Close any existing dropdown
+          document.querySelectorAll('.mr-dropdown').forEach(d => d.remove());
+
+          const projectId = parseInt(btn.dataset.projectId);
+          const mrIid = parseInt(btn.dataset.mrIid);
+          const isAssign = btn.classList.contains('assign-btn');
+
+          // Create and show loading dropdown (fixed position, appended to body)
+          const dropdown = document.createElement('div');
+          dropdown.className = 'mr-dropdown';
+          dropdown.innerHTML = '<div class="mr-dropdown-loading">Loading members...</div>';
+          const btnRect = btn.getBoundingClientRect();
+          dropdown.style.top = (btnRect.bottom + 4) + 'px';
+          dropdown.style.left = btnRect.left + 'px';
+          document.body.appendChild(dropdown);
+
+          // Prevent dropdown clicks from propagating
+          dropdown.addEventListener('click', (ev) => { ev.stopPropagation(); ev.preventDefault(); });
+
+          try {
+            const members = await window.gitlabbar.gitlab.getProjectMembers(projectId);
+            if (!members || members.length === 0) {
+              dropdown.innerHTML = '<div class="mr-dropdown-loading">No members found</div>';
+              setTimeout(() => dropdown.remove(), 2000);
+              return;
+            }
+
+            // Build dropdown items - "Me" first
+            let itemsHtml = `
+              <button class="mr-dropdown-item me-item" data-user-id="me">
+                <svg viewBox="0 0 24 24" style="width:22px;height:22px;fill:var(--accent-purple);flex-shrink:0;"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                <div class="member-info">
+                  <span class="member-name">Me</span>
+                  <span class="member-username">Assign to myself</span>
+                </div>
+              </button>
+            `;
+            members.forEach(m => {
+              const avatarHtml = m.avatar_url
+                ? `<img src="${escapeHtml(m.avatar_url)}" alt="${escapeHtml(m.name)}" />`
+                : `<div style="width:22px;height:22px;border-radius:50%;background:var(--gradient-blue);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:white;flex-shrink:0;">${m.name[0].toUpperCase()}</div>`;
+              itemsHtml += `
+                <button class="mr-dropdown-item" data-user-id="${m.id}">
+                  ${avatarHtml}
+                  <div class="member-info">
+                    <span class="member-name">${escapeHtml(m.name)}</span>
+                    <span class="member-username">@${escapeHtml(m.username)}</span>
+                  </div>
+                </button>
+              `;
+            });
+            dropdown.innerHTML = itemsHtml;
+
+            // Handle member selection
+            dropdown.querySelectorAll('.mr-dropdown-item').forEach(item => {
+              item.addEventListener('click', async (ev) => {
+                ev.stopPropagation();
+                ev.preventDefault();
+                const userId = item.dataset.userId;
+                dropdown.innerHTML = '<div class="mr-dropdown-loading">Updating...</div>';
+
+                try {
+                  let result;
+                  if (isAssign) {
+                    if (userId === 'me') {
+                      // Get current user info - use 0 as sentinel for "me" on the API side
+                      // GitLab API doesn't support "me" for assignee_ids, we need the user ID
+                      // The members list should contain the current user, but we use a dedicated call
+                      const allMembers = members;
+                      // For "me", we pass [0] and handle it server-side, or we find the current user
+                      result = await window.gitlabbar.gitlab.assignMR(projectId, mrIid, [0]);
+                    } else {
+                      result = await window.gitlabbar.gitlab.assignMR(projectId, mrIid, [parseInt(userId)]);
+                    }
+                  } else {
+                    if (userId === 'me') {
+                      result = await window.gitlabbar.gitlab.addReviewer(projectId, mrIid, [0]);
+                    } else {
+                      result = await window.gitlabbar.gitlab.addReviewer(projectId, mrIid, [parseInt(userId)]);
+                    }
+                  }
+                  dropdown.remove();
+                  // Visual feedback on the button
+                  btn.innerHTML = '<svg viewBox="0 0 24 24" style="width:12px;height:12px;fill:var(--accent-green);"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Done';
+                  btn.style.color = 'var(--accent-green)';
+                  btn.style.borderColor = 'var(--accent-green)';
+                  btn.style.borderStyle = 'solid';
+                  // Trigger refresh - the dataUpdated listener will re-render
+                  setTimeout(() => {
+                    window.gitlabbar.gitlab.refresh();
+                  }, 1000);
+                } catch (err) {
+                  dropdown.innerHTML = '<div class="mr-dropdown-loading">Error</div>';
+                  setTimeout(() => dropdown.remove(), 2000);
+                }
+              });
+            });
+          } catch (err) {
+            dropdown.innerHTML = '<div class="mr-dropdown-loading">Error loading members</div>';
+            setTimeout(() => dropdown.remove(), 2000);
+          }
+        });
+      });
+
+      // Notes badge click - show comments panel
+      list.querySelectorAll('.notes-badge.clickable').forEach(badge => {
+        badge.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          e.preventDefault();
+
+          // Toggle: if panel already open for this MR, close it
+          const existingPanel = document.querySelector(`.notes-panel[data-mr-iid="${badge.dataset.mrIid}"][data-project-id="${badge.dataset.projectId}"]`);
+          document.querySelectorAll('.notes-panel').forEach(p => p.remove());
+          document.querySelectorAll('.mr-dropdown').forEach(d => d.remove());
+          if (existingPanel) return; // Was open, now closed — done
+
+          const projectId = parseInt(badge.dataset.projectId);
+          const mrIid = parseInt(badge.dataset.mrIid);
+
+          // Create panel
+          const panel = document.createElement('div');
+          panel.className = 'notes-panel';
+          panel.dataset.projectId = String(projectId);
+          panel.dataset.mrIid = String(mrIid);
+          panel.innerHTML = '<div class="notes-panel-loading">Loading comments...</div>';
+          const badgeRect = badge.getBoundingClientRect();
+          panel.style.top = (badgeRect.bottom + 6) + 'px';
+          panel.style.right = (window.innerWidth - badgeRect.right) + 'px';
+          document.body.appendChild(panel);
+
+          panel.addEventListener('click', (ev) => { ev.stopPropagation(); });
+
+          try {
+            const notes = await window.gitlabbar.gitlab.getMRNotes(projectId, mrIid);
+            if (!notes || notes.length === 0) {
+              panel.innerHTML = '<div class="notes-panel-empty">No comments</div>';
+              return;
+            }
+
+            let html = `<div class="notes-panel-header">
+              <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
+              ${notes.length} comment${notes.length > 1 ? 's' : ''}
+              <button class="notes-panel-close" title="Close">
+                <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+              </button>
+            </div>`;
+
+            notes.slice(0, 10).forEach(note => {
+              const avatarHtml = note.author.avatar_url
+                ? `<img src="${escapeHtml(note.author.avatar_url)}" alt="${escapeHtml(note.author.name)}" />`
+                : `<div class="note-author-placeholder">${note.author.name[0].toUpperCase()}</div>`;
+
+              // Simple markdown-like rendering for the body
+              let body = escapeHtml(note.body);
+              body = body.replace(/`([^`]+)`/g, '<code>$1</code>');
+              body = body.replace(/\n/g, '<br>');
+
+              html += `
+                <div class="note-item">
+                  <div class="note-author">
+                    ${avatarHtml}
+                    <span class="note-author-name">${escapeHtml(note.author.name)}</span>
+                    <span class="note-author-time">${formatTime(note.createdAt)}</span>
+                  </div>
+                  <div class="note-body">${body}</div>
+                </div>
+              `;
+            });
+
+            panel.innerHTML = html;
+            // Close button handler
+            const closeBtn = panel.querySelector('.notes-panel-close');
+            if (closeBtn) {
+              closeBtn.addEventListener('click', (ev) => {
+                ev.stopPropagation();
+                panel.remove();
+              });
+            }
+          } catch (err) {
+            panel.innerHTML = '<div class="notes-panel-empty">Error loading comments</div>';
+          }
+        });
+      });
+
+      // Close dropdowns/panels - use a single global handler (set once)
+      if (!window._popupCloseHandlerSet) {
+        window._popupCloseHandlerSet = true;
+        document.addEventListener('click', (e) => {
+          if (!e.target.closest('.mr-action-btn') && !e.target.closest('.mr-dropdown')) {
+            document.querySelectorAll('.mr-dropdown').forEach(d => d.remove());
+          }
+          if (!e.target.closest('.notes-badge') && !e.target.closest('.notes-panel')) {
+            document.querySelectorAll('.notes-panel').forEach(p => p.remove());
+          }
+        });
+      }
 
       // Button to show all MRs
       const restoreBtn = document.getElementById('restoreMRsBtn');
@@ -2023,8 +2601,17 @@
             const draftBadge = mr.draft ? '<span class="draft-badge">Draft</span>' : '';
             const conflictBadge = mr.hasConflicts ? '<span class="conflict-badge">Conflicts</span>' : '';
 
+            // Age indicator
+            const ageInfo = getAgeInfo(mr.createdAt);
+
+            // Notes/comments badge
+            const mentionedClass = mr.userMentionedInNotes ? ' mentioned' : '';
+            const notesBadge = mr.userNotesCount > 0
+              ? `<span class="notes-badge clickable${mentionedClass}" data-project-id="${mr.projectId}" data-mr-iid="${mr.iid}" title="${mr.userMentionedInNotes ? 'You are mentioned - click to view' : 'Click to view comments'}"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>${mr.userNotesCount}${mr.userMentionedInNotes ? ' @' : ''}</span>`
+              : '';
+
             return `
-              <div class="item mr-item" data-url="${mr.webUrl}">
+              <div class="item mr-item ${ageInfo.itemClass}" data-url="${mr.webUrl}">
                 <div class="item-content" style="width: 100%;">
                   <div class="item-header">
                     ${authorAvatar}
@@ -2032,8 +2619,9 @@
                       <span class="item-author-name">${escapeHtml(mr.author?.name || 'Unknown')}</span>
                       <span class="item-author-username">@${escapeHtml(mr.author?.username || '')}</span>
                     </div>
-                    <div style="margin-left: auto; display: flex; align-items: center; gap: 8px;">
-                      <span class="item-time">${formatTime(mr.createdAt)}</span>
+                    <div style="margin-left: auto; display: flex; align-items: center; gap: 6px;">
+                      ${notesBadge}
+                      <span class="item-time-badge ${ageInfo.badgeClass}">${formatTime(mr.createdAt)}</span>
                       <button class="item-dismiss" data-id="${mr.id}" title="Hide this MR" style="opacity: 0.5;">
                         <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
                       </button>
@@ -2051,6 +2639,22 @@
                     <span class="branch-tag target" title="${escapeHtml(mr.targetBranch)}">${escapeHtml(mr.targetBranch)}</span>
                   </div>
                   ${(assigneesHtml || reviewersHtml) ? `<div class="people-row">${assigneesHtml}${reviewersHtml}</div>` : ''}
+                  ${(!mr.assignees || mr.assignees.length === 0 || !mr.reviewers || mr.reviewers.length === 0) ? `
+                  <div class="mr-actions">
+                    ${(!mr.assignees || mr.assignees.length === 0) ? `
+                      <button class="mr-action-btn assign-btn" data-project-id="${mr.projectId}" data-mr-iid="${mr.iid}" data-mr-id="${mr.id}">
+                        <svg viewBox="0 0 24 24"><path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                        + Assign
+                      </button>
+                    ` : ''}
+                    ${(!mr.reviewers || mr.reviewers.length === 0) ? `
+                      <button class="mr-action-btn reviewer-btn" data-project-id="${mr.projectId}" data-mr-iid="${mr.iid}" data-mr-id="${mr.id}">
+                        <svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                        + Reviewer
+                      </button>
+                    ` : ''}
+                  </div>
+                  ` : ''}
                 </div>
               </div>
             `;
@@ -2798,6 +3402,27 @@
       if (minutes < 60) return `${minutes}m`;
       if (hours < 24) return `${hours}h`;
       return `${days}d`;
+    }
+
+    function getAgeInfo(createdAt) {
+      if (!createdAt) return { itemClass: '', badgeClass: '' };
+      const now = new Date();
+      const created = new Date(createdAt);
+      const diffMs = now - created;
+      const hours = diffMs / 3600000;
+      const days = hours / 24;
+
+      if (hours < 24) {
+        return { itemClass: 'mr-age-fresh', badgeClass: 'fresh' };
+      } else if (hours < 48) {
+        return { itemClass: 'mr-age-warning', badgeClass: 'warning' };
+      } else if (days < 7) {
+        return { itemClass: 'mr-age-alert', badgeClass: 'alert' };
+      } else if (days < 30) {
+        return { itemClass: 'mr-age-danger', badgeClass: 'danger' };
+      } else {
+        return { itemClass: 'mr-age-critical', badgeClass: 'critical' };
+      }
     }
 
     function updateStatus(status) {
