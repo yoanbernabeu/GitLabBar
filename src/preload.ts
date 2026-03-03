@@ -23,6 +23,9 @@ const IPC_CHANNELS = {
   GITLAB_DISMISS_RELEASE: 'gitlab:dismissRelease',
   GITLAB_RESTORE_RELEASES: 'gitlab:restoreReleases',
   GITLAB_GET_PO_RELEASES: 'gitlab:getPOReleases',
+  GITLAB_GET_UNTAG_PROJECTS: 'gitlab:getUntagProjects',
+  GITLAB_REFRESH_UNTAG: 'gitlab:refreshUntag',
+  GITLAB_CLEAR_UNTAG_EXCLUSIONS: 'gitlab:clearUntagExclusions',
   CONFIG_GET: 'config:get',
   CONFIG_SET: 'config:set',
   CONFIG_GET_ALL: 'config:getAll',
@@ -33,6 +36,7 @@ const IPC_CHANNELS = {
   DATA_UPDATED: 'data:updated',
   REFRESH_STATUS: 'refresh:status',
   ERROR_OCCURRED: 'error:occurred',
+  UNTAG_DATA_UPDATED: 'untag:dataUpdated',
 };
 
 const api = {
@@ -62,6 +66,9 @@ const api = {
     dismissRelease: (releaseId: number) => ipcRenderer.invoke(IPC_CHANNELS.GITLAB_DISMISS_RELEASE, releaseId),
     restoreReleases: () => ipcRenderer.invoke(IPC_CHANNELS.GITLAB_RESTORE_RELEASES),
     getPOReleases: (projectId: number, page: number, perPage: number) => ipcRenderer.invoke(IPC_CHANNELS.GITLAB_GET_PO_RELEASES, projectId, page, perPage),
+    getUntagProjects: () => ipcRenderer.invoke(IPC_CHANNELS.GITLAB_GET_UNTAG_PROJECTS),
+    refreshUntag: () => ipcRenderer.invoke(IPC_CHANNELS.GITLAB_REFRESH_UNTAG),
+    clearUntagExclusions: () => ipcRenderer.invoke(IPC_CHANNELS.GITLAB_CLEAR_UNTAG_EXCLUSIONS),
   },
 
   config: {
@@ -92,6 +99,11 @@ const api = {
       const handler = (_: any, error: string) => callback(error);
       ipcRenderer.on(IPC_CHANNELS.ERROR_OCCURRED, handler);
       return () => ipcRenderer.removeListener(IPC_CHANNELS.ERROR_OCCURRED, handler);
+    },
+    untagDataUpdated: (callback: (data: any) => void) => {
+      const handler = (_: any, data: any) => callback(data);
+      ipcRenderer.on(IPC_CHANNELS.UNTAG_DATA_UPDATED, handler);
+      return () => ipcRenderer.removeListener(IPC_CHANNELS.UNTAG_DATA_UPDATED, handler);
     },
   },
 };

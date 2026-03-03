@@ -2,6 +2,7 @@ import { app, BrowserWindow } from 'electron';
 import path from 'path';
 import { trayManager } from './main/tray';
 import { pollingService } from './main/services/polling';
+import { untagPollingService } from './main/services/untagPolling';
 import { setupIpcHandlers } from './main/ipc/handlers';
 import { setupAutoLaunch } from './main/services/autolaunch';
 
@@ -29,6 +30,8 @@ if (!gotTheLock) {
       trayManager.updateFromData(data);
     });
 
+    untagPollingService.start();
+
     app.on('refresh-data' as any, () => {
       pollingService.refresh();
     });
@@ -40,6 +43,7 @@ if (!gotTheLock) {
 
   app.on('before-quit', () => {
     pollingService.stop();
+    untagPollingService.stop();
     trayManager.destroy();
   });
 

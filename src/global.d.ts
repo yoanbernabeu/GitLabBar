@@ -20,6 +20,14 @@ interface GitLabBarAPI {
     restoreMRs: () => Promise<any>;
     dismissRelease: (releaseId: number) => Promise<any>;
     restoreReleases: () => Promise<any>;
+    getPOReleases: (projectId: number, page: number, perPage: number) => Promise<any>;
+    getMRNotes: (projectId: number, mrIid: number) => Promise<any>;
+    getProjectMembers: (projectId: number) => Promise<any>;
+    assignMR: (projectId: number, mrIid: number, assigneeIds: number[]) => Promise<any>;
+    addReviewer: (projectId: number, mrIid: number, reviewerIds: number[]) => Promise<any>;
+    getUntagProjects: () => Promise<any>;
+    refreshUntag: () => Promise<any>;
+    clearUntagExclusions: () => Promise<any>;
   };
 
   config: {
@@ -39,6 +47,7 @@ interface GitLabBarAPI {
     dataUpdated: (callback: (data: any) => void) => () => void;
     refreshStatus: (callback: (status: string) => void) => () => void;
     error: (callback: (error: string) => void) => () => void;
+    untagDataUpdated: (callback: (data: any) => void) => () => void;
   };
 }
 
