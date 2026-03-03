@@ -1990,6 +1990,198 @@
       border-color: var(--accent-purple);
       box-shadow: 0 0 0 3px var(--accent-purple-glow);
     }
+
+    /* ═══════════════════════════════════════════
+       UNTAG TAB
+    ═══════════════════════════════════════════ */
+    .untag-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 14px;
+      background: var(--bg-card);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      margin-bottom: 8px;
+      position: relative;
+    }
+
+    .untag-item:hover {
+      background: var(--bg-card-hover);
+      border-color: rgba(139, 92, 246, 0.3);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .untag-item-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-sm);
+      background: var(--gradient-orange);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .untag-item-icon svg {
+      width: 16px;
+      height: 16px;
+      fill: white;
+    }
+
+    .untag-item-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .untag-item-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .untag-item-subtitle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 3px;
+      flex-wrap: wrap;
+    }
+
+    .untag-tag-name {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--accent-orange);
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid rgba(245, 158, 11, 0.2);
+      padding: 1px 6px;
+      border-radius: 4px;
+      min-width: 72px;
+      text-align: center;
+      display: inline-block;
+    }
+
+    .untag-commits-count {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent-blue);
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      padding: 1px 6px;
+      border-radius: 4px;
+      min-width: 80px;
+      text-align: center;
+      display: inline-block;
+    }
+
+    .untag-item-subtitle .item-time-badge {
+      min-width: 36px;
+      text-align: center;
+      display: inline-block;
+    }
+
+    .untag-expand-btn {
+      background: none;
+      border: none;
+      color: var(--accent-purple);
+      font-size: 10px;
+      font-weight: 500;
+      padding: 0;
+      cursor: pointer;
+      transition: color 0.2s ease;
+      white-space: nowrap;
+      opacity: 0.8;
+    }
+
+    .untag-expand-btn:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+
+    .untag-detail-panel {
+      display: none;
+      margin-top: 10px;
+      padding: 10px;
+      background: rgba(0, 0, 0, 0.15);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--glass-border);
+    }
+
+    .untag-detail-panel.expanded {
+      display: block;
+    }
+
+    .untag-commit-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 6px 0;
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    .untag-commit-item:last-child {
+      border-bottom: none;
+    }
+
+    .untag-commit-sha {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 10px;
+      color: var(--accent-purple);
+      background: rgba(139, 92, 246, 0.1);
+      padding: 1px 5px;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+
+    .untag-commit-title {
+      font-size: 11px;
+      color: var(--text-primary);
+      flex: 1;
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .untag-commit-author {
+      font-size: 10px;
+      color: var(--text-tertiary);
+      flex-shrink: 0;
+    }
+
+    .untag-exclusion-notice {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      background: rgba(245, 158, 11, 0.08);
+      border: 1px solid rgba(245, 158, 11, 0.15);
+      border-radius: var(--radius-sm);
+      margin-bottom: 12px;
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    .untag-exclusion-notice button {
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      border-radius: 6px;
+      color: var(--accent-orange);
+      font-size: 10px;
+      font-weight: 500;
+      padding: 3px 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .untag-exclusion-notice button:hover {
+      background: rgba(245, 158, 11, 0.25);
+    }
   </style>
 </head>
 <body>
@@ -2026,6 +2218,10 @@
     <button class="tab" data-tab="releases">
       <span>Releases</span>
       <span class="tab-badge" id="releaseCount">0</span>
+    </button>
+    <button class="tab" data-tab="untag">
+      <span>Untag</span>
+      <span class="tab-badge" id="untagCount">0</span>
     </button>
   </div>
 
@@ -2077,6 +2273,21 @@
       <div id="releases-list"></div>
     </div>
 
+    <div class="tab-content" id="untag-content">
+      <div class="loading-state" id="untag-loading">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Scanning unreleased commits...</div>
+      </div>
+      <div class="empty-state" id="untag-empty" style="display: none;">
+        <div class="empty-icon">
+          <svg viewBox="0 0 24 24"><path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/></svg>
+        </div>
+        <div class="empty-title">All Tagged</div>
+        <div class="empty-desc">All watched projects are up to date with their latest tags</div>
+      </div>
+      <div id="untag-list"></div>
+    </div>
+
     <div class="tab-content" id="po-content">
       <div class="po-filter" id="po-filter" style="display: none;">
         <select id="po-project-filter">
@@ -2123,6 +2334,9 @@
     let hasWatchedProjects = false;
     let poReleasesPages = {}; // { projectId: currentPage }
     let poFilterProject = 'all'; // 'all' or a projectPath
+    let untagProjects = [];
+    let isUntagLoading = true;
+    let untagExcludedCount = 0;
 
     // DOM Elements
     const tabs = document.querySelectorAll('.tab');
@@ -2139,6 +2353,7 @@
     const mrCount = document.getElementById('mrCount');
     const pipelineCount = document.getElementById('pipelineCount');
     const releaseCount = document.getElementById('releaseCount');
+    const untagCountEl = document.getElementById('untagCount');
     const statusDot = document.getElementById('statusDot');
     const lastUpdate = document.getElementById('lastUpdate');
     const headerSubtitle = document.getElementById('headerSubtitle');
@@ -2209,7 +2424,7 @@
 
     // Update header subtitle
     function updateHeaderSubtitle() {
-      const total = mergeRequests.length + pipelines.length + releases.length;
+      const total = mergeRequests.length + pipelines.length + releases.length + untagProjects.length;
       if (total === 0) {
         headerSubtitle.textContent = 'No activity';
       } else {
@@ -2217,6 +2432,7 @@
         if (mergeRequests.length > 0) parts.push(`${mergeRequests.length} MR${mergeRequests.length > 1 ? 's' : ''}`);
         if (pipelines.length > 0) parts.push(`${pipelines.length} pipeline${pipelines.length > 1 ? 's' : ''}`);
         if (releases.length > 0) parts.push(`${releases.length} release${releases.length > 1 ? 's' : ''}`);
+        if (untagProjects.length > 0) parts.push(`${untagProjects.length} untag`);
         headerSubtitle.textContent = parts.join(' • ');
       }
     }
@@ -3090,6 +3306,7 @@
         document.getElementById('mrs-content').classList.remove('active');
         document.getElementById('pipelines-content').classList.remove('active');
         document.getElementById('releases-content').classList.remove('active');
+        document.getElementById('untag-content').classList.remove('active');
         poContent.classList.add('active');
         renderPOView();
       } else {
@@ -3425,6 +3642,137 @@
       }
     }
 
+    // ===== Untag age info (adapted thresholds) =====
+    function getUntagAgeInfo(lastTagDate) {
+      if (!lastTagDate) return { itemClass: '', badgeClass: '' };
+      const now = new Date();
+      const tagDate = new Date(lastTagDate);
+      const diffMs = now - tagDate;
+      const hours = diffMs / 3600000;
+      const days = hours / 24;
+
+      if (days < 1) {
+        return { itemClass: 'mr-age-fresh', badgeClass: 'fresh' };
+      } else if (days < 3) {
+        return { itemClass: 'mr-age-warning', badgeClass: 'warning' };
+      } else if (days < 7) {
+        return { itemClass: 'mr-age-alert', badgeClass: 'alert' };
+      } else if (days < 30) {
+        return { itemClass: 'mr-age-danger', badgeClass: 'danger' };
+      } else {
+        return { itemClass: 'mr-age-critical', badgeClass: 'critical' };
+      }
+    }
+
+    // ===== Render Untag =====
+    function renderUntag() {
+      const list = document.getElementById('untag-list');
+      const empty = document.getElementById('untag-empty');
+      const loading = document.getElementById('untag-loading');
+
+      untagCountEl.textContent = untagProjects.length;
+      updateHeaderSubtitle();
+
+      if (isUntagLoading) {
+        loading.style.display = 'flex';
+        empty.style.display = 'none';
+        list.innerHTML = '';
+        return;
+      }
+
+      loading.style.display = 'none';
+
+      if (untagProjects.length === 0 && untagExcludedCount === 0) {
+        empty.style.display = 'flex';
+        list.innerHTML = '';
+        return;
+      }
+
+      empty.style.display = 'none';
+
+      let html = '';
+
+      // Exclusion notice
+      if (untagExcludedCount > 0) {
+        html += `
+          <div class="untag-exclusion-notice">
+            <span>${untagExcludedCount} project${untagExcludedCount > 1 ? 's' : ''} excluded (no tags)</span>
+            <button id="resetUntagExclusionsBtn">Reset exclusions</button>
+          </div>
+        `;
+      }
+
+      untagProjects.forEach((project, idx) => {
+        const ageInfo = getUntagAgeInfo(project.lastTagDate);
+        const commitsLabel = project.commitsAhead === 1 ? 'commit' : 'commits';
+
+        html += `
+          <div class="untag-item ${ageInfo.itemClass}" data-url="${escapeHtml(project.projectWebUrl)}">
+            <div class="untag-item-icon">
+              <svg viewBox="0 0 24 24"><path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/></svg>
+            </div>
+            <div class="untag-item-content">
+              <div class="untag-item-title">${escapeHtml(project.projectName)}</div>
+              <div class="untag-item-subtitle">
+                <span class="untag-tag-name">${escapeHtml(project.lastTagName)}</span>
+                <span class="untag-commits-count">+${project.commitsAhead} ${commitsLabel}</span>
+                <span class="item-time-badge ${ageInfo.badgeClass}">${formatTime(project.lastTagDate)}</span>
+                ${project.commits && project.commits.length > 0 ? `<button class="untag-expand-btn" data-idx="${idx}">Show commits</button>` : ''}
+              </div>
+              ${project.commits && project.commits.length > 0 ? `
+                <div class="untag-detail-panel" id="untag-detail-${idx}">
+                  ${project.commits.map(c => `
+                    <div class="untag-commit-item">
+                      <span class="untag-commit-sha">${escapeHtml(c.shortId)}</span>
+                      <span class="untag-commit-title">${escapeHtml(c.title)}</span>
+                      <span class="untag-commit-author">${escapeHtml(c.authorName)}</span>
+                    </div>
+                  `).join('')}
+                </div>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      });
+
+      list.innerHTML = html;
+
+      // Click on item -> open project in browser
+      list.querySelectorAll('.untag-item').forEach(item => {
+        item.addEventListener('click', (e) => {
+          if (e.target.closest('.untag-expand-btn')) return;
+          const url = item.dataset.url;
+          if (url && window.gitlabbar && window.gitlabbar.app) {
+            window.gitlabbar.app.openExternal(url);
+          }
+        });
+      });
+
+      // Expand/collapse commits
+      list.querySelectorAll('.untag-expand-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const idx = btn.dataset.idx;
+          const panel = document.getElementById(`untag-detail-${idx}`);
+          if (panel) {
+            const isExpanded = panel.classList.toggle('expanded');
+            btn.textContent = isExpanded ? 'Hide commits' : 'Show commits';
+          }
+        });
+      });
+
+      // Reset exclusions button
+      const resetBtn = document.getElementById('resetUntagExclusionsBtn');
+      if (resetBtn) {
+        resetBtn.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          if (window.gitlabbar && window.gitlabbar.gitlab) {
+            await window.gitlabbar.gitlab.clearUntagExclusions();
+          }
+        });
+      }
+    }
+
     function updateStatus(status) {
       statusDot.className = 'status-dot ' + status;
       if (lastUpdated) {
@@ -3459,14 +3807,28 @@
           renderMRs();
           renderPipelines();
           renderReleases();
+
+          // Load untag data
+          try {
+            const untagData = await window.gitlabbar.gitlab.getUntagProjects();
+            untagProjects = untagData?.untagProjects || [];
+            untagExcludedCount = untagData?.excludedCount || 0;
+            isUntagLoading = false;
+          } catch (e) {
+            console.error('Untag load error:', e);
+            isUntagLoading = false;
+          }
+          renderUntag();
         }
       } catch (err) {
         console.error('Load error:', err);
         isLoading = false;
+        isUntagLoading = false;
         updateStatus('error');
         renderMRs();
         renderPipelines();
         renderReleases();
+        renderUntag();
       }
     }
 
@@ -3488,6 +3850,13 @@
         renderPipelines();
         renderReleases();
         applyViewMode();
+      });
+
+      window.gitlabbar.on.untagDataUpdated((data) => {
+        untagProjects = data?.untagProjects || [];
+        untagExcludedCount = data?.excludedCount || 0;
+        isUntagLoading = false;
+        renderUntag();
       });
     }
 
@@ -3534,6 +3903,7 @@
     renderMRs();
     renderPipelines();
     renderReleases();
+    renderUntag();
 
     // Load data on start
     async function init() {

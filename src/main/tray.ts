@@ -257,6 +257,15 @@ class TrayManager {
     this.preferencesWindow.loadFile(prefsPath);
 
     this.preferencesWindow.once('ready-to-show', () => {
+      // Position on the same screen as the tray icon
+      const trayBounds = this.tray?.getBounds();
+      if (trayBounds) {
+        const display = screen.getDisplayMatching(trayBounds);
+        const windowBounds = this.preferencesWindow!.getBounds();
+        const x = Math.round(display.bounds.x + (display.bounds.width - windowBounds.width) / 2);
+        const y = Math.round(display.bounds.y + (display.bounds.height - windowBounds.height) / 2);
+        this.preferencesWindow!.setPosition(x, y);
+      }
       this.preferencesWindow?.show();
     });
 

@@ -4,6 +4,7 @@ import { accounts } from '../store/accounts';
 import { config } from '../store/config';
 import { keychain } from '../store/keychain';
 import { pollingService } from '../services/polling';
+import { untagPollingService } from '../services/untagPolling';
 import { trayManager } from '../tray';
 import { GitLabClient, getGitLabClient } from '../api/gitlab';
 import { setAutoLaunch, getAutoLaunchStatus } from '../services/autolaunch';
@@ -324,6 +325,22 @@ export function setupIpcHandlers(): void {
 
     const client = getGitLabClient(accountId, account.instanceUrl, token);
     return client.getGroups();
+  });
+
+  // ===== Untag =====
+
+  ipcMain.handle(IPC_CHANNELS.GITLAB_GET_UNTAG_PROJECTS, () => {
+    return untagPollingService.getData();
+  });
+
+  ipcMain.handle(IPC_CHANNELS.GITLAB_REFRESH_UNTAG, async () => {
+    return untagPollingService.refresh();
+  });
+
+  ipcMain.handle(IPC_CHANNELS.GITLAB_CLEAR_UNTAG_EXCLUSIONS, async () => {
+    untagPollingService.clearExclusions();
+    await untagPollingService.refresh();
+    return { success: true };
   });
 
   // ===== Configuration =====

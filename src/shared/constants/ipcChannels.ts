@@ -25,6 +25,11 @@ export const IPC_CHANNELS = {
   GITLAB_RESTORE_RELEASES: 'gitlab:restoreReleases',
   GITLAB_GET_PO_RELEASES: 'gitlab:getPOReleases',
 
+  // Untag
+  GITLAB_GET_UNTAG_PROJECTS: 'gitlab:getUntagProjects',
+  GITLAB_REFRESH_UNTAG: 'gitlab:refreshUntag',
+  GITLAB_CLEAR_UNTAG_EXCLUSIONS: 'gitlab:clearUntagExclusions',
+
   // Configuration
   CONFIG_GET: 'config:get',
   CONFIG_SET: 'config:set',
@@ -40,6 +45,7 @@ export const IPC_CHANNELS = {
   DATA_UPDATED: 'data:updated',
   REFRESH_STATUS: 'refresh:status',
   ERROR_OCCURRED: 'error:occurred',
+  UNTAG_DATA_UPDATED: 'untag:dataUpdated',
 } as const;
 
 export type IpcChannel = typeof IPC_CHANNELS[keyof typeof IPC_CHANNELS];

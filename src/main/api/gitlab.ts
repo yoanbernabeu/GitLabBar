@@ -12,6 +12,10 @@ import {
   GitLabDeploymentResponse,
   Release,
   Deployment,
+  UntagProject,
+  UntagCommit,
+  GitLabTagResponse,
+  GitLabCompareResponse,
 } from '../../shared/types';
 
 export interface GitLabProject {
@@ -20,6 +24,7 @@ export interface GitLabProject {
   name_with_namespace: string;
   path_with_namespace: string;
   web_url: string;
+  default_branch: string;
   namespace: {
     id: number;
     name: string;
@@ -544,6 +549,77 @@ export class GitLabClient {
       duration: pipeline.duration,
       source: pipeline.source,
     };
+  }
+
+  async getLatestTag(projectId: number): Promise<GitLabTagResponse | null> {
+    try {
+      const response = await this.client.get<GitLabTagResponse[]>(
+        `/projects/${projectId}/repository/tags`,
+        { params: { order_by: 'updated', sort: 'desc', per_page: 1 } }
+      );
+      return response.data.length > 0 ? response.data[0] : null;
+    } catch (error) {
+      console.error(`Failed to fetch latest tag for project ${projectId}:`, error);
+      return null;
+    }
+  }
+
+  async compareRefs(projectId: number, from: string, to: string): Promise<GitLabCompareResponse | null> {
+    try {
+      const response = await this.client.get<GitLabCompareResponse>(
+        `/projects/${projectId}/repository/compare`,
+        { params: { from, to } }
+      );
+      return response.data;
+    } catch (error) {
+      console.error(`Failed to compare refs for project ${projectId}:`, error);
+      return null;
+    }
+  }
+
+  async getUntagInfo(projectId: number): Promise<UntagProject | null> {
+    try {
+      const project = await this.getProject(projectId);
+      if (!project) return null;
+
+      const defaultBranch = project.default_branch || 'main';
+      const latestTag = await this.getLatestTag(projectId);
+      if (!latestTag) return null;
+
+      const comparison = await this.compareRefs(projectId, latestTag.name, defaultBranch);
+      if (!comparison || comparison.commits.length === 0) return null;
+
+      const commits: UntagCommit[] = comparison.commits
+        .slice(0, 20)
+        .map((c) => ({
+          id: c.id,
+          shortId: c.short_id,
+          title: c.title,
+          authorName: c.author_name,
+          committedDate: c.committed_date || c.created_at,
+        }));
+
+      const lastCommitDate = commits.length > 0
+        ? commits[commits.length - 1].committedDate
+        : latestTag.commit.committed_date;
+
+      return {
+        projectId: project.id,
+        projectName: project.name,
+        projectPath: project.path_with_namespace,
+        projectWebUrl: project.web_url,
+        defaultBranch,
+        lastTagName: latestTag.name,
+        lastTagDate: latestTag.commit.committed_date,
+        commitsAhead: comparison.commits.length,
+        lastCommitDate,
+        commits,
+        accountId: this.accountId,
+      };
+    } catch (error) {
+      console.error(`Failed to get untag info for project ${projectId}:`, error);
+      return null;
+    }
   }
 
   async searchProjects(query: string): Promise<GitLabProject[]> {
