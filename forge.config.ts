@@ -15,6 +15,17 @@ const config: ForgeConfig = {
     appBundleId: 'com.yoanbernabeu.gitlabbar',
     appCategoryType: 'public.app-category.developer-tools',
     darwinDarkModeSupport: true,
+    // Ad-hoc sign so the code-signing identifier is derived from
+    // appBundleId (com.yoanbernabeu.gitlabbar) instead of the generic
+    // com.github.Electron that packager's fallback signing leaves behind.
+    // macOS needs a unique, consistent identity to register the app as a
+    // notification source. identityValidation:false skips the keychain/cert
+    // lookup, so no Apple Developer account is required.
+    osxSign: {
+      identity: '-',
+      identityValidation: false,
+      preAutoEntitlements: false,
+    },
     extendInfo: {
       LSUIElement: true, // Hide from Dock (menu bar app)
     },
