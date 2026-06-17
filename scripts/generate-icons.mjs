@@ -1,5 +1,5 @@
 import sharp from 'sharp';
-import { mkdtempSync, rmSync } from 'fs';
+import { mkdirSync, mkdtempSync, rmSync } from 'fs';
 import { execFileSync } from 'child_process';
 import { tmpdir } from 'os';
 import { join, dirname } from 'path';
@@ -56,23 +56,25 @@ async function generateAppIcns() {
     ['icon_32x32.png', 32], ['icon_32x32@2x.png', 64],
     ['icon_128x128.png', 128], ['icon_128x128@2x.png', 256],
     ['icon_256x256.png', 256], ['icon_256x256@2x.png', 512],
-    ['icon_512x512.png', 512],
+    ['icon_512x512.png', 512], ['icon_512x512@2x.png', 1024],
   ];
 
-  const iconset = join(mkdtempSync(join(tmpdir(), 'gitlabbar-')), 'icon.iconset');
-  const { mkdirSync } = await import('fs');
+  const tmpRoot = mkdtempSync(join(tmpdir(), 'gitlabbar-'));
+  const iconset = join(tmpRoot, 'icon.iconset');
   mkdirSync(iconset, { recursive: true });
 
-  for (const [name, size] of sizes) {
-    await sharp(join(iconsDir, 'icon.png'))
-      .resize(size, size, { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
-      .png()
-      .toFile(join(iconset, name));
+  try {
+    for (const [name, size] of sizes) {
+      await sharp(join(iconsDir, 'icon.png'))
+        .resize(size, size, { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
+        .png()
+        .toFile(join(iconset, name));
+    }
+    execFileSync('iconutil', ['-c', 'icns', iconset, '-o', join(iconsDir, 'icon.icns')]);
+    console.log('Generated: icon.icns');
+  } finally {
+    rmSync(tmpRoot, { recursive: true, force: true });
   }
-
-  execFileSync('iconutil', ['-c', 'icns', iconset, '-o', join(iconsDir, 'icon.icns')]);
-  rmSync(dirname(iconset), { recursive: true, force: true });
-  console.log('Generated: icon.icns');
 }
 
 async function main() {
